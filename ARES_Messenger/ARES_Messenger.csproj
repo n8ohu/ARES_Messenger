@@ -77,7 +77,31 @@
     <Compile Include="About.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ARQCall.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ARQCall.Designer.cs">
+      <DependentUpon>ARQCall.cs</DependentUpon>
+    </Compile>
     <Compile Include="Autoupdate.cs" />
+    <Compile Include="Beacon.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Beacon.Designer.cs">
+      <DependentUpon>Beacon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChatSetupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChatSetupForm.Designer.cs">
+      <DependentUpon>ChatSetupForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Contact.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Contact.Designer.cs">
+      <DependentUpon>Contact.cs</DependentUpon>
+    </Compile>
     <Compile Include="DialogAutoupdate.cs">
       <SubType>Form</SubType>
     </Compile>

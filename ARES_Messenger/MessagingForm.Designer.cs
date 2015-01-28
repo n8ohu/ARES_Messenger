@@ -1,6 +1,6 @@
 ﻿namespace ARES_Messenger
 {
-    partial class Main
+    partial class MessagingForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,47 +28,40 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.rtbSession = new System.Windows.Forms.RichTextBox();
-            this.rtbSend = new System.Windows.Forms.RichTextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessagingForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // rtbSession
-            // 
-            this.rtbSession.Location = new System.Drawing.Point(27, 27);
-            this.rtbSession.Name = "rtbSession";
-            this.rtbSession.Size = new System.Drawing.Size(725, 202);
-            this.rtbSession.TabIndex = 0;
-            this.rtbSession.Text = "";
-            // 
-            // rtbSend
-            // 
-            this.rtbSend.Location = new System.Drawing.Point(27, 235);
-            this.rtbSend.Name = "rtbSend";
-            this.rtbSend.Size = new System.Drawing.Size(725, 97);
-            this.rtbSend.TabIndex = 1;
-            this.rtbSend.Text = "";
             // 
             // toolStrip1
             // 
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(784, 25);
-            this.toolStrip1.TabIndex = 2;
+            this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // Main
+            // dataGridView1
+            // 
+            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(350, 65);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(240, 150);
+            this.dataGridView1.TabIndex = 1;
+            // 
+            // MessagingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 361);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.rtbSend);
-            this.Controls.Add(this.rtbSession);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Main";
-            this.Text = "ARES Messenger Chat";
+            this.Name = "MessagingForm";
+            this.Text = "ARES Messenger Messages";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -76,9 +69,7 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox rtbSession;
-        private System.Windows.Forms.RichTextBox rtbSend;
         private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
-

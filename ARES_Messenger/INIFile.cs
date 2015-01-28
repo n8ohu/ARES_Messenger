@@ -9,7 +9,7 @@ using System.Text;
 
 namespace ARES_Messenger
 {
-    class INIFile
+    public class INIFile
     {
         string strFilePath;
 

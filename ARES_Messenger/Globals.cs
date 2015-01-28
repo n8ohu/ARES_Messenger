@@ -85,7 +85,7 @@ namespace ARES_Messenger
         // Objects...
         public static Autoupdate objAutoupdate;
         public static WL2KServers objWL2KServers = new WL2KServers();
-        //public static INIFile objINIFile;
+        public static INIFile objINIFile;
         public static object objINIFileLock = new object();
         public static object objLogLock = new object();
         public static Main objMain;
@@ -159,7 +159,7 @@ namespace ARES_Messenger
             objMain = objM;
         }
 
-        public static string DateToRFC822Date(System.DateTime dtUTCDate)
+        /*public static string DateToRFC822Date(System.DateTime dtUTCDate)
         {
             // This function converts a Date type to a standard RFC 822 date string. The date
             // arguement must be in UTC...
@@ -172,7 +172,7 @@ namespace ARES_Messenger
             sDay = sDays.Substring(3 * (dtUTCDate.DayOfWeek), 3) + ", ";
             sMonth = " " + sMonths.Substring(3 * (dtUTCDate.Month - 1), 3) + " ";
             return sDay + Strings.Format(dtUTCDate, "dd") + sMonth + Strings.Format(dtUTCDate, "yyyy") + " " + Strings.Format(dtUTCDate, "HH:mm:ss") + " -0000";
-        }
+        }*/
 
         public static void EventLog(string strText)
         {
@@ -380,6 +380,7 @@ namespace ARES_Messenger
             Regex objRegex = new Regex("^[A-Z][A-Z][A-Z][0-9]");
             if (objRegex.IsMatch(strCallsign))
                 return IsValidSSID(strCallsign);
+            return false;
         }
 
         public static bool IsValidSSID(string strCallsign)
@@ -443,6 +444,7 @@ namespace ARES_Messenger
             Regex objRegex = new Regex("^[M][A-Z][A-Z][0-9]");
             if (objRegex.IsMatch(strCallsign))
                 return IsValidSSID(strCallsign);
+            return false;
         }
 
         public static bool IsWEBSiteOnLine()

@@ -26,7 +26,7 @@ namespace ARES_Messenger
         private bool blnExceptionOccurred = false;
         // Set the application parameters here.  The values here should work for most of the winlink apps
 
-        private int intHTTPPort = 8776;
+        private static int intHTTPPort = 8776;
 
         private int intFTPPort = 8777;
         private static string strAuthUser = "Autoupdate";
@@ -389,7 +389,7 @@ namespace ARES_Messenger
                 // The goal is to 'nag' the user into updating.
                 //
                 Globals.blnAbortAU = true;
-                strNewAUVersion = strPatchVersion;
+                Globals.strNewAUVersion = strPatchVersion;
 
                 Globals.objMain.Enabled = false;
                 DialogAutoupdate objAU = new DialogAutoupdate();
@@ -1156,7 +1156,7 @@ namespace ARES_Messenger
             //
             // Remove the 'Test Autoupdate' key from the ini file
             //
-            objINIFile.DeleteKey("Main", "Test Autoupdate");
+            Globals.objINIFile.DeleteKey("Main", "Test Autoupdate");
 
         }
         // End ClearTestAutoupdateINI
@@ -1184,7 +1184,7 @@ namespace ARES_Messenger
                     //
                     // Delete it all
                     //
-                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(strPath, FileIO.DeleteDirectoryOption.DeleteAllContents);
+                    //Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(strPath, FileIO.DeleteDirectoryOption.DeleteAllContents);
 
                 }
                 catch (Exception ex)

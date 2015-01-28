@@ -28,10 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.rtbSession = new System.Windows.Forms.RichTextBox();
             this.rtbSend = new System.Windows.Forms.RichTextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.ipdaemon1 = new nsoftware.IPWorks.Ipdaemon(this.components);
+            this.ftp1 = new nsoftware.IPWorks.Ftp(this.components);
+            this.http1 = new nsoftware.IPWorks.Http(this.components);
             this.SuspendLayout();
             // 
             // rtbSession
@@ -58,6 +62,18 @@
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // ipdaemon1
+            // 
+            this.ipdaemon1.About = "IP*Works! V9 [Build 5414]";
+            // 
+            // ftp1
+            // 
+            this.ftp1.About = "IP*Works! V9 [Build 5414]";
+            // 
+            // http1
+            // 
+            this.http1.About = "IP*Works! V9 [Build 5414]";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -79,6 +95,9 @@
         private System.Windows.Forms.RichTextBox rtbSession;
         private System.Windows.Forms.RichTextBox rtbSend;
         private System.Windows.Forms.ToolStrip toolStrip1;
+        private nsoftware.IPWorks.Ipdaemon ipdaemon1;
+        private nsoftware.IPWorks.Ftp ftp1;
+        private nsoftware.IPWorks.Http http1;
     }
 }
 

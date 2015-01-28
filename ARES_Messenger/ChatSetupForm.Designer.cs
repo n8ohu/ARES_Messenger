@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(540, 261);
             this.Name = "ChatSetupForm";
-            this.Text = "ChatSetupForm";
+            this.Text = "Chat Setup";
             this.ResumeLayout(false);
 
         }

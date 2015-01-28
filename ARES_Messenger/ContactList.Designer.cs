@@ -1,6 +1,6 @@
 ﻿namespace ARES_Messenger
 {
-    partial class Contact
+    partial class ContactList
     {
         /// <summary>
         /// Required designer variable.
@@ -28,9 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // ContactList
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Contact";
+            this.ClientSize = new System.Drawing.Size(624, 261);
+            this.Name = "ContactList";
+            this.Text = "Contact List";
+            this.ResumeLayout(false);
+
         }
 
         #endregion

@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace ARES_Messenger
 {
-    public partial class Contact : Form
+    public partial class ContactList : Form
     {
-        public Contact()
+        public ContactList()
         {
             InitializeComponent();
         }

@@ -36,10 +36,15 @@
             this.ipdaemon1 = new nsoftware.IPWorks.Ipdaemon(this.components);
             this.ftp1 = new nsoftware.IPWorks.Ftp(this.components);
             this.http1 = new nsoftware.IPWorks.Http(this.components);
+            this.objTNCTCPIPPort = new nsoftware.IPWorks.Ipport(this.components);
+            this.ipport1 = new nsoftware.IPWorks.Ipport(this.components);
+            this.mnuCall = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // rtbSession
             // 
+            this.rtbSession.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbSession.Location = new System.Drawing.Point(27, 27);
             this.rtbSession.Name = "rtbSession";
             this.rtbSession.Size = new System.Drawing.Size(725, 202);
@@ -48,6 +53,7 @@
             // 
             // rtbSend
             // 
+            this.rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbSend.Location = new System.Drawing.Point(27, 235);
             this.rtbSend.Name = "rtbSend";
             this.rtbSend.Size = new System.Drawing.Size(725, 97);
@@ -56,6 +62,8 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCall});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(784, 25);
@@ -74,6 +82,23 @@
             // 
             this.http1.About = "IP*Works! V9 [Build 5414]";
             // 
+            // objTNCTCPIPPort
+            // 
+            this.objTNCTCPIPPort.About = "IP*Works! V9 [Build 5414]";
+            // 
+            // ipport1
+            // 
+            this.ipport1.About = "IP*Works! V9 [Build 5414]";
+            // 
+            // mnuCall
+            // 
+            this.mnuCall.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuCall.Image = ((System.Drawing.Image)(resources.GetObject("mnuCall.Image")));
+            this.mnuCall.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.mnuCall.Name = "mnuCall";
+            this.mnuCall.Size = new System.Drawing.Size(40, 22);
+            this.mnuCall.Text = "Call";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -85,6 +110,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "ARES Messenger Chat";
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -98,6 +125,9 @@
         private nsoftware.IPWorks.Ipdaemon ipdaemon1;
         private nsoftware.IPWorks.Ftp ftp1;
         private nsoftware.IPWorks.Http http1;
+        private nsoftware.IPWorks.Ipport objTNCTCPIPPort;
+        private nsoftware.IPWorks.Ipport ipport1;
+        private System.Windows.Forms.ToolStripDropDownButton mnuCall;
     }
 }
 

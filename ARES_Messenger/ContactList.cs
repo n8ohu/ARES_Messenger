@@ -11,6 +11,7 @@ namespace ARES_Messenger
 {
     public partial class ContactList : Form
     {
+        
         public ContactList()
         {
             InitializeComponent();

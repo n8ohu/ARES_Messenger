@@ -47,7 +47,7 @@ namespace ARES_Messenger
         private bool blnRestartTNC = false;
         private bool blnClearingTextBoxes = false;
         private bool blnCtrlKey = false;
-        private bool blnInitializingGrid = false;
+        //private bool blnInitializingGrid = false;
         private bool blnBtnEndVisible = false;
         private bool blnRequestCWID = false;
         private bool blnIgnoreManualSessionScroll = false;
@@ -216,7 +216,7 @@ namespace ARES_Messenger
                         Globals.Log("{Status} " + strText.Substring(3));
                         if (Globals.strMode == "ARQ" & (strText.IndexOf("DISCONNECTED") != -1))
                         {
-                            mnuCall.Enabled = true;
+                            //mnuCall.Enabled = true;
                             Globals.blnARQCalling = false;
                         }
 
@@ -254,7 +254,7 @@ namespace ARES_Messenger
                         Globals.Log("{Alert} " + strText.Substring(4));
                         if (Globals.strMode == "ARQ")
                         {
-                            mnuCall.Enabled = true;
+                            //mnuCall.Enabled = true;
                             Globals.blnARQCalling = false;
                         }
                         // This insures Alert messages in Red Bold are always on a clean line
@@ -619,6 +619,438 @@ namespace ARES_Messenger
             }
         }
 
+        private void tmrStartup_Tick(object sender, System.EventArgs e)
+        {
+            tmrStartup.Stop();
+            tmrPoll.Stop();
+            //objTNCTCPIPPort = Nothing
+            //objTNCTCPIPPort = New nsoftware.IPWorks.Ipport
+            Globals.blnMorseId = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "MorseID", "True"));
+            Globals.strCaptureDevice = Globals.objINIFile.GetString("ARDOP Chat", "CaptureDevice", "");
+            Globals.strPlaybackDevice = Globals.objINIFile.GetString("ARDOP Chat", "PlaybackDevice", "");
+            Globals.intTCPIPPort = Globals.objINIFile.GetInteger("ARDOP Chat", "TCPIPPort", 8515);
+            Globals.intFontSize = Globals.objINIFile.GetInteger("ARDOP Chat", "TextBoxFontSize", 10);
+            //grdContacts.Font = new System.Drawing.Font("Microsoft Sans Serif", Globals.intFontSize, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+            rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", Globals.intFontSize, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+            Globals.intARQTimeout = Globals.objINIFile.GetInteger("ARDOP Chat", "ARQTimeout", 90);
+            Globals.intH4DriveLevel = Globals.objINIFile.GetInteger("ARDOP Chat", "DriveLevel", 100);
+            Globals.intTuning = Globals.objINIFile.GetInteger("ARDOP Chat", "Tuning", 100);
+            Globals.intCallRepeats = Globals.objINIFile.GetInteger("ARDOP Chat", "Call Repeats", 5);
+            if (Globals.intTuning > 200)
+                Globals.intTuning = 200;
+            // (to accomodate any older ini files with tuning values over 200) 
+            Globals.strTCPIPAddress = Globals.objINIFile.GetString("ARDOP Chat", "TCPIPAddress", "127.0.0.1");
+            Globals.strCharacterSet = Globals.objINIFile.GetString("ARDOP Chat", "CharacterSet", "ASCII(7BIT)");
+            Globals.strUserFilesDirectory = Globals.objINIFile.GetString("ARDOP Chat", "UserFileDirectory", Globals.strExecutionDirectory + "UserFiles\\");
+            if (!Directory.Exists(Globals.strUserFilesDirectory))
+                Directory.CreateDirectory(Globals.strUserFilesDirectory);
+            Globals.blnAutoID = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "AutoID", "False"));
+            Globals.strMyCallsign = Globals.objINIFile.GetString("ARDOP Chat", "MyCallSign", "");
+            Globals.strMyARQID = Globals.objINIFile.GetString("ARDOP Chat", "MyARQID", Globals.strMyCallsign);
+            Globals.strCQText = Globals.objINIFile.GetString("ARDOP Chat", "CQ Text", "CQ ARQ");
+            Globals.blnSendCR = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendCR", "False"));
+            Globals.blnSendSpace = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendSpace", "False"));
+            Globals.blnSendWord = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendWord", "False"));
+            Globals.blnSendCtrlCr = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendCtrlCR", "False"));
+            Globals.blnEnableDebugLogs = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "EnableDebugLogs", "True"));
+            Globals.blnEnableAutoupdate = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "EnableAutoUpdate", "True"));
+            Globals.blnAutoUpdateTest = Convert.ToBoolean(Globals.objINIFile.GetString("Main", "Test Autoupdate", "False"));
+            Globals.blnEnableBeacon = Convert.ToBoolean(Globals.objINIFile.GetString("Main", "Enable Beacon", "False"));
+            Globals.strFECBeaconText = Globals.objINIFile.GetString("Main", "FEC Beacon Text", "DE " + Globals.strMyCallsign);
+            Globals.strARQBeaconText = Globals.objINIFile.GetString("Main", "ARQ Beacon Text", "H4 ARQ <" + Globals.strMyCallsign);
+            Globals.intBeaconInterval = Globals.objINIFile.GetInteger("Main", "Beacon Interval", 20);
+            if (Globals.blnEnableBeacon)
+                Globals.dttNextBeacon = DateTime.Now.AddMinutes(Globals.intBeaconInterval);
+            Globals.intFrontPorch = Globals.objINIFile.GetInteger("ARDOP Chat", "FrontPorch", 125);
+            Globals.intBackPorch = Globals.objINIFile.GetInteger("ARDOP Chat", "BackPorch", 0);
+            Globals.strMode = Globals.objINIFile.GetString("Main", "Startup Mode", "FEC");
+            switch (Globals.strMode)
+            {
+                case "FEC":
+                    mnuMode.Text = "Mode: FEC";
+                    break;
+                case "FEC FD":
+                    mnuMode.Text = "Mode: FEC FD";
+                    break;
+                case "ARQ":
+                    mnuMode.Text = "Mode: ARQ";
+                    //mnuCall.Enabled = true;
+                    break;
+                case "FEC RBST":
+                    mnuMode.Text = "Mode: FEC RBST";
+                    break;
+            }
+            this.rtbSend.Enabled = true;
+            intHorizSplitDst = Globals.objINIFile.GetInteger("ARDOP Chat", "Horiz Splitter", 200);
+            //intVertSplitDst = Globals.objINIFile.GetInteger("ARDOP Chat", "Vert Splitter", 200);
+            // This insures window placement is on screen independent of .ini values
+            System.Windows.Forms.Screen[] screen = System.Windows.Forms.Screen.AllScreens;
+            bool blnLocOK = false;
+            Int32 intTop = default(Int32);
+            Int32 intLeft = default(Int32);
+            Int32 intWidth = default(Int32);
+            Int32 intHeight = default(Int32);
+            // Set inital window position and size...
+            intTop = Globals.objINIFile.GetInteger("ARDOP Chat", "Top", 100);
+            intLeft = Globals.objINIFile.GetInteger("ARDOP Chat", "Left", 100);
+            intWidth = Globals.objINIFile.GetInteger("ARDOP Chat", "Width", 680);
+            intHeight = Globals.objINIFile.GetInteger("ARDOP Chat", "Height", 360);
+            for (int i = 0; i <= screen.Length - 1; i++)
+            {
+                if (screen[i].Bounds.Top <= intTop & screen[i].Bounds.Bottom >= (intTop + intHeight) & screen[i].Bounds.Left <= intLeft & screen[i].Bounds.Right >= (intLeft + intWidth))
+                {
+                    // Position window in its last location only if it is within the bounds of the screen
+                    this.Top = intTop;
+                    this.Left = intLeft;
+                    this.Width = intWidth;
+                    this.Height = intHeight;
+                    blnLocOK = true;
+                    break; // TODO: might not be correct. Was : Exit For
+                }
+            }
+            if (!blnLocOK)
+            {
+                // Det default window position, Height and Width
+                this.Top = 100;
+                this.Left = 100;
+                this.Width = 680;
+                this.Height = 360;
+            }
+
+            string strBaseCallsign = Globals.GetBaseCallsign(Globals.strMyCallsign);
+            //InitializeContactGrid();
+            this.Text = "ARDOP Chat " + Application.ProductVersion;
+            Globals.queSessionEvents.Enqueue("P " + Constants.vbLf);
+            if (Globals.blnEnableAutoupdate)
+            {
+                Globals.queSessionEvents.Enqueue("P  *** Startup of ARDOP Chat Ver " + Application.ProductVersion + " ; Auto Update Enabled using HTTP port 8776" + Constants.vbLf);
+            }
+            else
+            {
+                Globals.queSessionEvents.Enqueue("P  *** Startup of ARDOP Chat Ver " + Application.ProductVersion + " ; Auto Update Disabled" + Constants.vbLf);
+            }
+            if (Globals.blnAutoUpdateTest)
+                Globals.queSessionEvents.Enqueue("P  *** Start Autoupdate Test in approx 20 sec ***" + Constants.vbLf);
+            Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: " + Globals.strMode + Constants.vbCrLf);
+            if (!Globals.blnAutoID)
+            {
+                //mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+                //mnuItemAutoID.Text = "Auto ID is Off";
+                Globals.queSessionEvents.Enqueue("P  *** Auto ID is OFF" + Constants.vbCrLf);
+            }
+            else
+            {
+                //mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+                //mnuItemAutoID.Text = "Auto ID is On";
+                Globals.queSessionEvents.Enqueue("P  *** Auto ID is ON" + Constants.vbCrLf);
+            }
+            try
+            {
+                splHorizontal.SplitterDistance = intHorizSplitDst;
+                //splVertical.SplitterDistance = intVertSplitDst;
+            }
+            catch
+            {
+            }
+
+
+            Globals.Log("BLANK");
+            // Setup auto update use test mode if in Source code directory
+            Globals.objAutoupdate = new Autoupdate(Globals.blnAutoUpdateTest, (!Globals.blnEnableAutoupdate));
+            Application.DoEvents();
+            Globals.Log("*** Startup of ARDOP Chat Ver " + Application.ProductVersion + " *** " + Constants.vbCrLf);
+            if ((Globals.objRadio == null))
+            {
+                Globals.objRadio = new Radio();
+                //Globals.objRadio.SetFrequency(0);
+                // this initializes the radio control ports but will not actually set the freq to 0.
+            }
+            blnStartingARDOPTNC = true;
+            StartARDOPWinTNC();
+            if (blnTNCIsOpen)
+            {
+                Globals.queSessionEvents.Enqueue("P  *** ARDOP Win TNC TCPIP OK on port " + Globals.intTCPIPPort.ToString() + Constants.vbLf);
+            }
+            blnStartingARDOPTNC = false;
+
+            //queSessionEvents.Enqueue("P " & vbLf)
+            Globals.Log("BLANK");
+            tmrPoll.Start();
+            this.Focus();
+        }
+
+        public void LogADIFQSO(string strCall, System.DateTime dttStartUTCDate, System.DateTime dttEndUTCDate, string strName, string strQTH, string strMode, int intFreqHz, string strAVGSN, string strRemoteGS, string strComment = "")
+        {
+            string strLine = "<station_callsign:" + Globals.strMyCallsign.Length.ToString() + ">" + Globals.strMyCallsign;
+            if (!string.IsNullOrEmpty(strCall))
+            {
+                strLine += "<call:" + strCall.Length.ToString() + ">" + strCall.ToUpper();
+            }
+            strLine += "<qso_date:8>" + Strings.Format(dttStartUTCDate, "yyyyMMdd");
+            strLine += "<time_on:6>" + Strings.Format(dttStartUTCDate, "HHmmss");
+            if (dttStartUTCDate.Subtract(dttEndUTCDate).TotalSeconds < 0)
+            {
+                strLine += "<time_off:6>" + Strings.Format(dttEndUTCDate, "HHmmss");
+            }
+            if (!string.IsNullOrEmpty(strName))
+            {
+                strLine += "<name:" + strName.Length + ">" + strName;
+            }
+            if (!string.IsNullOrEmpty(strQTH))
+            {
+                strLine += "<qth:" + strQTH.Length + ">" + strQTH;
+            }
+            strLine += "<mode:" + strMode.Length.ToString() + ">" + strMode;
+            if (intFreqHz >= 1800000 & intFreqHz <= 2000000)
+            {
+                strLine += "<band:4>160M";
+            }
+            else if (intFreqHz >= 3500000 & intFreqHz <= 4000000)
+            {
+                strLine += "<band:3>80M";
+            }
+            else if (intFreqHz >= 7000000 & intFreqHz <= 7300000)
+            {
+                strLine += "<band:3>40M";
+            }
+            else if (intFreqHz >= 10100000 & intFreqHz <= 10150000)
+            {
+                strLine += "<band:3>30M";
+            }
+            else if (intFreqHz >= 14000000 & intFreqHz <= 14350000)
+            {
+                strLine += "<band:3>20M";
+            }
+            else if (intFreqHz >= 18068000 & intFreqHz <= 18168000)
+            {
+                strLine += "<band:3>17M";
+            }
+            else if (intFreqHz >= 21000000 & intFreqHz <= 21450000)
+            {
+                strLine += "<band:3>15M";
+            }
+            else if (intFreqHz >= 24890000 & intFreqHz <= 24990000)
+            {
+                strLine += "<band:3>12M";
+            }
+            else if (intFreqHz >= 28000000 & intFreqHz <= 29700000)
+            {
+                strLine += "<band:3>10M";
+            }
+            else if (intFreqHz >= 50000000 & intFreqHz <= 54000000)
+            {
+                strLine += "<band:2>6M";
+            }
+            else if (intFreqHz >= 144000000 & intFreqHz <= 148000000)
+            {
+                strLine += "<band:2>2M";
+            }
+            else if (intFreqHz >= 420000000 & intFreqHz <= 450000000)
+            {
+                strLine += "<band:4>70CM";
+            }
+            if (intFreqHz > 1800000 & intFreqHz < 144000000)
+            {
+                string strMHz = Strings.Format(intFreqHz / 1000000, "##0.0000");
+                strLine += "<freq:" + strMHz.Length + ">" + strMHz;
+            }
+            else if (intFreqHz >= 144000000)
+            {
+                string strMHz = Strings.Format(intFreqHz / 1000000, "##0.000");
+                strLine += "<freq:" + strMHz.Length + ">" + strMHz;
+            }
+            if (!string.IsNullOrEmpty(strRemoteGS))
+            {
+                strLine += "<gridsquare:" + strRemoteGS.Length + ">" + strRemoteGS;
+            }
+            if (!string.IsNullOrEmpty(strAVGSN))
+            {
+                strComment = strComment + "; AvgS/N:" + strAVGSN + " dB";
+                // add into comment field 
+            }
+
+            if (!string.IsNullOrEmpty(strComment))
+            {
+                strLine += "<comment:" + strComment.Length + ">" + strComment;
+            }
+            try
+            {
+                //If Not IO.File.Exists(strLogsDirectory & "Chat_ADIF_" & strMyCallsign & ".adi") Then ' Add header if new file
+                //    My.Computer.FileSystem.WriteAllText(strLogsDirectory & "Chat_ADIF_" & strMyCallsign & ".adi", _
+                //    "<adif_ver:4>3.00" & "<programid:" & Application.ProductName.Length.ToString & ">" & Application.ProductName & _
+                //    "<programversion:" & Application.ProductVersion.Length.ToString & ">" & Application.ProductVersion & "<eoh>" & vbCrLf, True)
+                //    ' Add first record showing My call sign and Grid square
+                //    My.Computer.FileSystem.WriteAllText(strLogsDirectory & "Chat_ADIF_" & strMyCallsign & ".adi", _
+                //  "<my_callsign:" & strMyCallsign.Length.ToString & ">" & strMyCallsign & "my_gridsquare:" & strMyGridSquare.Length.ToString & ">" & strMyGridSquare & "<eor>" & vbCrLf, True)
+                //End If
+                //My.Computer.FileSystem.WriteAllText(strLogsDirectory & "Chat_ADIF_" & strMyCallsign & ".adi", strLine & "<eor>" & vbCrLf, True)
+            }
+            catch (Exception ex)
+            {
+                //Globals.Exceptions("[Main.LogADIFQSO]  Err :" + Err.Number.ToString + "  Exception: " + ex.ToString);
+            }
+
+        }
+
+        
+
+
+        private void RepaintRTBSend(ref int intPtr)
+        {
+            string strDataToDisplay = rtbSend.Text;
+            blnClearingTextBoxes = true;
+            rtbSend.Clear();
+            rtbSend.Select(0, 0);
+            rtbSend.SelectionColor = Color.DimGray;
+            rtbSend.AppendText(strDataToDisplay);
+            rtbSend.Select(intPtr, 0);
+            rtbSend.SelectionColor = Color.Navy;
+            blnClearingTextBoxes = false;
+
+        }
+
+        private void rtbSession_VScroll(object sender, System.EventArgs e)
+        {
+            if (!blnIgnoreManualSessionScroll)
+            {
+                dttScrollLocked = DateTime.Now;
+                blnScrollLocked = true;
+                //btnScrollLock.Visible = true;
+                rtbSession.SuspendLayout();
+            }
+        }
+
+
+        private void rtbSend_GotFocus(object sender, System.EventArgs e)
+        {
+            blnRTBSendHasFocus = true;
+            if (blnScrollLocked)
+            {
+                //btnScrollLock.PerformClick();
+                blnScrollLocked = false;
+            }
+        }
+
+        /*private void rtbSend_KeyDown1(object sender, KeyEventArgs e)
+        {
+            
+            if (e.KeyCode == 17)
+            {
+                blnCtrlKey = true;
+            }
+        }
+
+
+        private void rtbSend_KeyPress1(object sender, KeyPressEventArgs e)
+        {
+            
+            strLastSendKey = e.KeyChar;
+            if (((strLastSendKey == Constants.vbLf) & blnCtrlKey & Globals.blnSendCtrlCr) | ((strLastSendKey == Constants.vbCr) & (Globals.blnSendCR | Globals.blnSendSpace)))
+            {
+                if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
+                {
+                    Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
+                    return;
+                }
+                string strTextToSend = null;
+
+                strTextToSend = rtbSend.Text.Substring(intRtbSendPtr);
+
+                if (strTextToSend.Length > 0)
+                {
+                    objTCPData.DataToSend = strTextToSend;
+                    Globals.dttNextBeacon = DateTime.Now.AddMinutes(Globals.intBeaconInterval);
+                    // hold off any beacons for the beacon interval
+                    if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                    {
+                        LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
+                        dttLastFECSend = System.DateTime.UtcNow;
+                    }
+                }
+                intRtbSendPtr = rtbSend.Text.Length;
+                RepaintRTBSend(ref intRtbSendPtr);
+            }
+            else if (strLastSendKey == " " & rtbSend.Text.EndsWith(" ") & Globals.blnSendSpace)
+            {
+                if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
+                {
+                    Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
+                    return;
+                }
+                string strTextToSend = rtbSend.Text.Substring(intRtbSendPtr);
+
+                if (strTextToSend.Length > 0)
+                {
+                    objTCPData.DataToSend = strTextToSend;
+                    if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                    {
+                        LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
+                        dttLastFECSend = System.DateTime.UtcNow;
+                    }
+                }
+                intRtbSendPtr = rtbSend.Text.Length;
+                RepaintRTBSend(ref intRtbSendPtr);
+            }
+            else if ((strLastSendKey == " " | strLastSendKey == Constants.vbCr) & Globals.blnSendWord)
+            {
+                if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
+                {
+                    Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
+                    return;
+                }
+                string strTextToSend = rtbSend.Text.Substring(intRtbSendPtr);
+
+                if (strTextToSend.Length > 0)
+                {
+                    objTCPData.DataToSend = strTextToSend;
+                    if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                    {
+                        LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
+                        dttLastFECSend = System.DateTime.UtcNow;
+                    }
+                }
+                intRtbSendPtr = rtbSend.Text.Length;
+                RepaintRTBSend(ref intRtbSendPtr);
+            }
+            else if (rtbSend.Text.Length < intRtbSendPtr)
+            {
+                intRtbSendPtr += 0;
+            }
+        }
+
+        private void rtbSend_KeyUp1(object sender, KeyEventArgs e)
+        {
+            
+            if (e.KeyCode == 17)
+            {
+                blnCtrlKey = false;
+            }
+        }*/
+
+        
+        private void rtbSend_LostFocus(object sender, System.EventArgs e)
+        {
+            blnRTBSendHasFocus = false;
+            //Debug.WriteLine("rtbSend_LostFocus")
+        }
+
+        private void rtbSend_MouseDown1(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                ContextMenurtbSend.Visible = true;
+                ContextMenurtbSend.Show(this.Left + this.Width - ContextMenurtbSend.Width, this.Top + this.Height - ContextMenurtbSend.Height);
+
+                //If MsgBox("Do you want to clear all text in the Keyboard text box?" & vbCr & _
+                //          "Prior sent has been logged to " & Application.ProductName & _
+                //       " " & Format(Date.UtcNow, "yyyyMMdd") & ".log", MsgBoxStyle.YesNo, "Clear Keyboard Entry Text Box?") = MsgBoxResult.Yes Then
+                //    blnClearingTextBoxes = True
+                //    rtbSend.Clear()
+                //    blnClearingTextBoxes = False
+                //    intRtbSendPtr = 0
+                //End If
+            }
+        }
 
 
         public Main()

@@ -30,88 +30,150 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
+            this.ToolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.mnuFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.mnuMode = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ipdaemon1 = new nsoftware.IPWorks.Ipdaemon(this.components);
+            this.Ftp1 = new nsoftware.IPWorks.Ftp(this.components);
+            this.Http1 = new nsoftware.IPWorks.Http(this.components);
+            this.objTNCTCPIPPort = new nsoftware.IPWorks.Ipport(this.components);
+            this.objTCPData = new nsoftware.IPWorks.Ipport(this.components);
+            this.tmrStartup = new System.Windows.Forms.Timer(this.components);
+            this.ToolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.tmrPoll = new System.Windows.Forms.Timer(this.components);
+            this.splHorizontal = new System.Windows.Forms.SplitContainer();
             this.rtbSession = new System.Windows.Forms.RichTextBox();
             this.rtbSend = new System.Windows.Forms.RichTextBox();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.ipdaemon1 = new nsoftware.IPWorks.Ipdaemon(this.components);
-            this.ftp1 = new nsoftware.IPWorks.Ftp(this.components);
-            this.http1 = new nsoftware.IPWorks.Http(this.components);
-            this.objTNCTCPIPPort = new nsoftware.IPWorks.Ipport(this.components);
-            this.ipport1 = new nsoftware.IPWorks.Ipport(this.components);
-            this.mnuCall = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStrip1.SuspendLayout();
+            this.ContextMenurtbSend = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextMenurtbSession = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ToolStrip1.SuspendLayout();
+            this.splHorizontal.Panel1.SuspendLayout();
+            this.splHorizontal.Panel2.SuspendLayout();
+            this.splHorizontal.SuspendLayout();
             this.SuspendLayout();
             // 
-            // rtbSession
+            // ToolStrip1
             // 
-            this.rtbSession.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbSession.Location = new System.Drawing.Point(27, 27);
-            this.rtbSession.Name = "rtbSession";
-            this.rtbSession.Size = new System.Drawing.Size(725, 202);
-            this.rtbSession.TabIndex = 0;
-            this.rtbSession.Text = "";
+            this.ToolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuFile,
+            this.mnuMode});
+            this.ToolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.ToolStrip1.Name = "ToolStrip1";
+            this.ToolStrip1.Size = new System.Drawing.Size(784, 25);
+            this.ToolStrip1.TabIndex = 2;
+            this.ToolStrip1.Text = "ToolStrip1";
             // 
-            // rtbSend
+            // mnuFile
             // 
-            this.rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbSend.Location = new System.Drawing.Point(27, 235);
-            this.rtbSend.Name = "rtbSend";
-            this.rtbSend.Size = new System.Drawing.Size(725, 97);
-            this.rtbSend.TabIndex = 1;
-            this.rtbSend.Text = "";
+            this.mnuFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuFile.Image = ((System.Drawing.Image)(resources.GetObject("mnuFile.Image")));
+            this.mnuFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.mnuFile.Name = "mnuFile";
+            this.mnuFile.Size = new System.Drawing.Size(38, 22);
+            this.mnuFile.Text = "File";
             // 
-            // toolStrip1
+            // mnuMode
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuCall});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(784, 25);
-            this.toolStrip1.TabIndex = 2;
-            this.toolStrip1.Text = "toolStrip1";
+            this.mnuMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuMode.Enabled = false;
+            this.mnuMode.Image = ((System.Drawing.Image)(resources.GetObject("mnuMode.Image")));
+            this.mnuMode.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.mnuMode.Name = "mnuMode";
+            this.mnuMode.Size = new System.Drawing.Size(77, 22);
+            this.mnuMode.Text = "Mode: FEC";
+            this.mnuMode.ToolTipText = "Select Mode ARQ or FEC";
             // 
             // ipdaemon1
             // 
             this.ipdaemon1.About = "IP*Works! V9 [Build 5414]";
             // 
-            // ftp1
+            // Ftp1
             // 
-            this.ftp1.About = "IP*Works! V9 [Build 5414]";
+            this.Ftp1.About = "IP*Works! V9 [Build 5414]";
             // 
-            // http1
+            // Http1
             // 
-            this.http1.About = "IP*Works! V9 [Build 5414]";
+            this.Http1.About = "IP*Works! V9 [Build 5414]";
             // 
             // objTNCTCPIPPort
             // 
             this.objTNCTCPIPPort.About = "IP*Works! V9 [Build 5414]";
             // 
-            // ipport1
+            // objTCPData
             // 
-            this.ipport1.About = "IP*Works! V9 [Build 5414]";
+            this.objTCPData.About = "IP*Works! V9 [Build 5414]";
             // 
-            // mnuCall
+            // splHorizontal
             // 
-            this.mnuCall.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.mnuCall.Image = ((System.Drawing.Image)(resources.GetObject("mnuCall.Image")));
-            this.mnuCall.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.mnuCall.Name = "mnuCall";
-            this.mnuCall.Size = new System.Drawing.Size(40, 22);
-            this.mnuCall.Text = "Call";
+            this.splHorizontal.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.splHorizontal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splHorizontal.Location = new System.Drawing.Point(0, 25);
+            this.splHorizontal.Margin = new System.Windows.Forms.Padding(4);
+            this.splHorizontal.Name = "splHorizontal";
+            this.splHorizontal.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splHorizontal.Panel1
+            // 
+            this.splHorizontal.Panel1.Controls.Add(this.rtbSession);
+            // 
+            // splHorizontal.Panel2
+            // 
+            this.splHorizontal.Panel2.Controls.Add(this.rtbSend);
+            this.splHorizontal.Size = new System.Drawing.Size(784, 336);
+            this.splHorizontal.SplitterDistance = 262;
+            this.splHorizontal.TabIndex = 2;
+            // 
+            // rtbSession
+            // 
+            this.rtbSession.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(245)))), ((int)(((byte)(225)))));
+            this.rtbSession.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtbSession.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbSession.Location = new System.Drawing.Point(0, 0);
+            this.rtbSession.Margin = new System.Windows.Forms.Padding(4);
+            this.rtbSession.Name = "rtbSession";
+            this.rtbSession.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
+            this.rtbSession.Size = new System.Drawing.Size(780, 258);
+            this.rtbSession.TabIndex = 1;
+            this.rtbSession.Text = "";
+            // 
+            // rtbSend
+            // 
+            this.rtbSend.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.rtbSend.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtbSend.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbSend.Location = new System.Drawing.Point(0, 0);
+            this.rtbSend.Margin = new System.Windows.Forms.Padding(4);
+            this.rtbSend.Name = "rtbSend";
+            this.rtbSend.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
+            this.rtbSend.Size = new System.Drawing.Size(780, 66);
+            this.rtbSend.TabIndex = 5;
+            this.rtbSend.Text = "";
+            // 
+            // ContextMenurtbSend
+            // 
+            this.ContextMenurtbSend.Name = "ContextMenurtbSend";
+            this.ContextMenurtbSend.Size = new System.Drawing.Size(61, 4);
+            // 
+            // ContextMenurtbSession
+            // 
+            this.ContextMenurtbSession.Name = "ContextMenurtbSession";
+            this.ContextMenurtbSession.Size = new System.Drawing.Size(61, 4);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 361);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.rtbSend);
-            this.Controls.Add(this.rtbSession);
+            this.Controls.Add(this.splHorizontal);
+            this.Controls.Add(this.ToolStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "ARES Messenger Chat";
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.ToolStrip1.ResumeLayout(false);
+            this.ToolStrip1.PerformLayout();
+            this.splHorizontal.Panel1.ResumeLayout(false);
+            this.splHorizontal.Panel2.ResumeLayout(false);
+            this.splHorizontal.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -119,15 +181,22 @@
 
         #endregion
 
+        private System.Windows.Forms.ToolStrip ToolStrip1;
+        private nsoftware.IPWorks.Ipdaemon ipdaemon1;
+        private nsoftware.IPWorks.Ftp Ftp1;
+        private nsoftware.IPWorks.Http Http1;
+        private nsoftware.IPWorks.Ipport objTNCTCPIPPort;
+        private nsoftware.IPWorks.Ipport objTCPData;
+        private System.Windows.Forms.Timer tmrStartup;
+        private System.Windows.Forms.ToolTip ToolTip1;
+        private System.Windows.Forms.Timer tmrPoll;
+        private System.Windows.Forms.SplitContainer splHorizontal;
         private System.Windows.Forms.RichTextBox rtbSession;
         private System.Windows.Forms.RichTextBox rtbSend;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private nsoftware.IPWorks.Ipdaemon ipdaemon1;
-        private nsoftware.IPWorks.Ftp ftp1;
-        private nsoftware.IPWorks.Http http1;
-        private nsoftware.IPWorks.Ipport objTNCTCPIPPort;
-        private nsoftware.IPWorks.Ipport ipport1;
-        private System.Windows.Forms.ToolStripDropDownButton mnuCall;
+        private System.Windows.Forms.ToolStripDropDownButton mnuFile;
+        private System.Windows.Forms.ToolStripDropDownButton mnuMode;
+        private System.Windows.Forms.ContextMenuStrip ContextMenurtbSend;
+        private System.Windows.Forms.ContextMenuStrip ContextMenurtbSession;
     }
 }
 

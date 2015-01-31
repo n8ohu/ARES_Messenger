@@ -931,17 +931,17 @@ namespace ARES_Messenger
             }
         }
 
-        /*private void rtbSend_KeyDown1(object sender, KeyEventArgs e)
+        private void rtbSend_KeyDown1(object sender, KeyEventArgs e)
         {
-            
-            if (e.KeyCode == 17)
+
+            if (e.KeyCode == Keys.ControlKey)
             {
                 blnCtrlKey = true;
             }
         }
 
 
-        private void rtbSend_KeyPress1(object sender, KeyPressEventArgs e)
+        /*private void rtbSend_KeyPress1(object sender, KeyPressEventArgs e)
         {
             
             strLastSendKey = e.KeyChar;
@@ -1016,16 +1016,16 @@ namespace ARES_Messenger
             {
                 intRtbSendPtr += 0;
             }
-        }
+        }*/
 
         private void rtbSend_KeyUp1(object sender, KeyEventArgs e)
         {
-            
-            if (e.KeyCode == 17)
+
+            if (e.KeyCode == Keys.ControlKey)
             {
                 blnCtrlKey = false;
             }
-        }*/
+        }
 
         
         private void rtbSend_LostFocus(object sender, System.EventArgs e)
@@ -1052,10 +1052,203 @@ namespace ARES_Messenger
             }
         }
 
+        private void CloseTNC()
+        {
+            try
+            {
+                if (objTNCTCPIPPort.Connected == true)
+                {
+                    SendCommandToTNC("CLOSE");
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    return;
+                }
+
+                if (objTCPData.Connected)
+                {
+                    objTNCTCPIPPort.Linger = false;
+                    objTCPData.Disconnect();
+                }
+                objTNCTCPIPPort.Dispose();
+                objTCPData = null;
+                bool blnRunning = false;
+                Process[] Processes = Process.GetProcesses();
+                foreach (Process objProcess in Processes)
+                {
+                    if (objProcess.Id == intARDOP_WinProcessID)
+                    {
+                        blnRunning = true; break; // TODO: might not be correct. Was : Exit For
+                    }
+                }
+
+                if (blnRunning)
+                {
+                    try
+                    {
+                        Process objProcess = Process.GetProcessById(intARDOP_WinProcessID);
+                        objProcess.Kill();
+                        int intLoops = 0;
+                        do
+                        {
+                            Thread.Sleep(100);
+                            if (objProcess.HasExited)
+                            {
+                                intARDOP_WinProcessID = -1;
+                                blnTNCIsOpen = false;
+                                break; // TODO: might not be correct. Was : Exit Do
+                            }
+                            intLoops += 1;
+                            if (intLoops > 30)
+                            {
+                                break; // TODO: might not be correct. Was : Exit Do
+                            }
+                        } while (true);
+                    }
+                    catch
+                    {
+                    }
+                }
+                else
+                {
+                    blnTNCIsOpen = false;
+                }
+                Globals.objINIFile.WriteInteger("H4_TNC", "Process Id", -1);
+                Globals.objINIFile.Flush();
+                Thread.Sleep(200);
+            }
+            catch (Exception ex)
+            {
+                Globals.Exceptions("Main.CloseTNC: " + ex.ToString());
+            }
+
+        }
+
+
+        private void Main_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            //UpdateContacts();
+            Globals.objINIFile.WriteString("Main", "Startup Mode", Globals.strMode);
+            if (intARDOP_WinProcessID != -1)
+            {
+                try
+                {
+                    Process objProcess = Process.GetProcessById(intARDOP_WinProcessID);
+                    objProcess.Kill();
+                    Globals.Log("*** Existing ARDOP_Win process " + intARDOP_WinProcessID.ToString() + " killed." + Constants.vbCr);
+                    blnTNCIsOpen = false;
+                    // Thread.Sleep(1000)
+                }
+                catch
+                {
+                }
+            }
+
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                try
+                {
+                    // objINIFile.WriteInteger("Chat", "Horiz Splitter", CInt(100 * rtbSession.Height / (rtbSession.Height + rtbSend.Height)))
+                    Globals.objINIFile.WriteInteger("ARDOP Chat", "Horiz Splitter", splHorizontal.SplitterDistance);
+                    //objINIFile.WriteInteger("ARDOP Chat", "Vert Splitter", splVertical.SplitterDistance);
+                    Globals.objINIFile.WriteInteger("ARDOP Chat", "Top", this.Top);
+                    Globals.objINIFile.WriteInteger("ARDOP Chat", "Left", this.Left);
+                    Globals.objINIFile.WriteInteger("ARDOP Chat", "Width", this.Width);
+                    Globals.objINIFile.WriteInteger("ARDOP Chat", "Height", this.Height);
+
+                }
+                catch (Exception ex)
+                {
+                    Globals.Exceptions("ARDOP Chat main form Closed: " + ex.ToString());
+                }
+
+            }
+            Globals.objINIFile.Flush();
+            Thread.Sleep(200);
+        }
+        private void Main_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            if (blnStartingARDOPTNC)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            if (Globals.blnAutoupdateInProgress)
+            {
+                if (Interaction.MsgBox("Autoupdate is in progress! ... Do you want to force close and cancel Autoupdate?", MsgBoxStyle.YesNo, "Autoupdate in Progress!") == MsgBoxResult.No)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            if (Globals.objRadio != null)
+                //Globals.objRadio.CloseRadio();
+            if (blnTNCIsOpen)
+            {
+                //CloseTNC();
+            }
+            if (Globals.objAutoupdate != null)
+            {
+                Globals.objAutoupdate.Close();
+            }
+            Globals.objINIFile.WriteString("Main", "Test Autoupdate", "False");
+            Globals.objINIFile.WriteString("ARDOP Chat", "AutoID", Globals.blnAutoID.ToString());
+        }
+
+        private void Main_Load(object sender, System.EventArgs e)
+        {
+            Globals.strExecutionDirectory = Application.StartupPath + "\\";
+            Globals.strLogsDirectory = Globals.strExecutionDirectory + "Logs\\";
+            if (!Directory.Exists(Globals.strLogsDirectory))
+                Directory.CreateDirectory(Globals.strLogsDirectory);
+            Globals.strDataDirectory = Globals.strExecutionDirectory + "Data\\";
+            if (!Directory.Exists(Globals.strDataDirectory))
+                Directory.CreateDirectory(Globals.strDataDirectory);
+
+            Globals.objINIFile = new INIFile(Globals.strExecutionDirectory + "ARES_Messenger.ini");
+            tmrStartup.Start();
+            Globals.SetMainReference(this);
+        }
+
+        private void Main_VisibleChanged(object sender, System.EventArgs e)
+        {
+        }
+
+        private void Main_ResizeEnd(object sender, System.EventArgs e)
+        {
+            dttScrollLocked = DateTime.Now.AddSeconds(-30);
+        }
+
+        private void Main_Resize(object sender, System.EventArgs e)
+        {
+            if (this.WindowState != FormWindowState.Minimized)
+            {
+                if (this.Width < 480)
+                    this.Width = 480;
+                if (this.Height < 200)
+                    this.Height = 200;
+            }
+
+        }
+
+        private void Main_LocationChanged(object sender, System.EventArgs e)
+        {
+        }
+
 
         public Main()
         {
             InitializeComponent();
+            VisibleChanged += Main_VisibleChanged;
+            ResizeEnd += Main_ResizeEnd;
+            Resize += Main_Resize;
+            LocationChanged += Main_LocationChanged;
+            Load += Main_Load;
+            FormClosing += Main_FormClosing;
+            FormClosed += Main_FormClosed;
+
         }
     }
 }

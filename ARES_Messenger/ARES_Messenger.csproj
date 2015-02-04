@@ -134,6 +134,7 @@
     <Compile Include="MessagingForm.Designer.cs">
       <DependentUpon>MessagingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PortAudio.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Radio.cs">

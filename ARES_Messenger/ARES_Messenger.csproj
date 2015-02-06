@@ -153,6 +153,9 @@
     <EmbeddedResource Include="ContactList.resx">
       <DependentUpon>ContactList.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DialogAutoupdate.resx">
+      <DependentUpon>DialogAutoupdate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FlampForm.resx">
       <DependentUpon>FlampForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -28,7 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.grpRadioControlPort = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.chkControlDTR = new System.Windows.Forms.CheckBox();
             this.chkControlRTS = new System.Windows.Forms.CheckBox();
             this.cmbControlBaud = new System.Windows.Forms.ComboBox();
@@ -47,15 +50,14 @@
             this.cmbModel = new System.Windows.Forms.ComboBox();
             this.cmbAntenna = new System.Windows.Forms.ComboBox();
             this.grpPTTPort = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.chkPTTRTS = new System.Windows.Forms.CheckBox();
             this.chkPTTDTR = new System.Windows.Forms.CheckBox();
             this.cmbPTTBaud = new System.Windows.Forms.ComboBox();
             this.cmbPTTPort = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.btnHelpRadio = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.grpRadioControlPort.SuspendLayout();
             this.grpRadioSettings.SuspendLayout();
             this.grpPTTPort.SuspendLayout();
@@ -75,6 +77,24 @@
             this.grpRadioControlPort.TabIndex = 0;
             this.grpRadioControlPort.TabStop = false;
             this.grpRadioControlPort.Text = "Radio Control Port";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(282, 28);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(32, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Baud";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(23, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(89, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Serial Port to Use";
             // 
             // chkControlDTR
             // 
@@ -122,6 +142,7 @@
             this.btnUpdate.TabIndex = 1;
             this.btnUpdate.Text = "Save Radio Settings";
             this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // btnClose
             // 
@@ -131,6 +152,7 @@
             this.btnClose.TabIndex = 2;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // grpRadioSettings
             // 
@@ -270,6 +292,24 @@
             this.grpPTTPort.TabStop = false;
             this.grpPTTPort.Text = "PTT Port (Optional)";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(282, 27);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(32, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "Baud";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(26, 20);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(89, 13);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Serial Port to Use";
+            // 
             // chkPTTRTS
             // 
             this.chkPTTRTS.AutoSize = true;
@@ -308,57 +348,22 @@
             this.cmbPTTPort.Size = new System.Drawing.Size(121, 21);
             this.cmbPTTPort.TabIndex = 0;
             // 
-            // button1
+            // btnHelpRadio
             // 
-            this.button1.Location = new System.Drawing.Point(57, 218);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(89, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Serial Port to Use";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(89, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Serial Port to Use";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(282, 27);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(32, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Baud";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(282, 28);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(32, 13);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "Baud";
+            this.btnHelpRadio.Location = new System.Drawing.Point(51, 218);
+            this.btnHelpRadio.Name = "btnHelpRadio";
+            this.btnHelpRadio.Size = new System.Drawing.Size(150, 30);
+            this.btnHelpRadio.TabIndex = 5;
+            this.btnHelpRadio.Text = "Radio Setup Help";
+            this.btnHelpRadio.UseVisualStyleBackColor = true;
+            this.btnHelpRadio.Click += new System.EventHandler(this.btnHelpRadio_Click);
             // 
             // Radio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(613, 261);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnHelpRadio);
             this.Controls.Add(this.grpPTTPort);
             this.Controls.Add(this.grpRadioSettings);
             this.Controls.Add(this.btnClose);
@@ -366,6 +371,9 @@
             this.Controls.Add(this.grpRadioControlPort);
             this.Name = "Radio";
             this.Text = "Radio";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Radio_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Radio_FormClosed);
+            this.Load += new System.EventHandler(this.Radio_Load);
             this.grpRadioControlPort.ResumeLayout(false);
             this.grpRadioControlPort.PerformLayout();
             this.grpRadioSettings.ResumeLayout(false);
@@ -390,7 +398,7 @@
         private System.Windows.Forms.ComboBox cmbPTTBaud;
         private System.Windows.Forms.ComboBox cmbPTTPort;
         private System.Windows.Forms.RadioButton rdoUSB;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnHelpRadio;
         private System.Windows.Forms.CheckBox chkControlDTR;
         private System.Windows.Forms.CheckBox chkControlRTS;
         private System.Windows.Forms.CheckBox chkInternalTuner;
@@ -406,5 +414,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

@@ -32,6 +32,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.ToolStrip1 = new System.Windows.Forms.ToolStrip();
             this.mnuFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.mnuItemAutoID = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpContentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpIndexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SetupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SetupBeaconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMode = new System.Windows.Forms.ToolStripDropDownButton();
             this.ipdaemon1 = new nsoftware.IPWorks.Ipdaemon(this.components);
             this.Ftp1 = new nsoftware.IPWorks.Ftp(this.components);
@@ -46,6 +53,7 @@
             this.rtbSend = new System.Windows.Forms.RichTextBox();
             this.ContextMenurtbSend = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextMenurtbSession = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuCall = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToolStrip1.SuspendLayout();
             this.splHorizontal.Panel1.SuspendLayout();
             this.splHorizontal.Panel2.SuspendLayout();
@@ -56,7 +64,8 @@
             // 
             this.ToolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuFile,
-            this.mnuMode});
+            this.mnuMode,
+            this.mnuCall});
             this.ToolStrip1.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip1.Name = "ToolStrip1";
             this.ToolStrip1.Size = new System.Drawing.Size(784, 25);
@@ -66,11 +75,64 @@
             // mnuFile
             // 
             this.mnuFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuItemAutoID,
+            this.aboutToolStripMenuItem,
+            this.HelpContentsToolStripMenuItem,
+            this.HelpIndexToolStripMenuItem,
+            this.SetupToolStripMenuItem,
+            this.SetupBeaconToolStripMenuItem,
+            this.ExitToolStripMenuItem1});
             this.mnuFile.Image = ((System.Drawing.Image)(resources.GetObject("mnuFile.Image")));
             this.mnuFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.mnuFile.Name = "mnuFile";
             this.mnuFile.Size = new System.Drawing.Size(38, 22);
             this.mnuFile.Text = "File";
+            // 
+            // mnuItemAutoID
+            // 
+            this.mnuItemAutoID.Name = "mnuItemAutoID";
+            this.mnuItemAutoID.Size = new System.Drawing.Size(150, 22);
+            this.mnuItemAutoID.Text = "Auto ID is Off";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // HelpContentsToolStripMenuItem
+            // 
+            this.HelpContentsToolStripMenuItem.Name = "HelpContentsToolStripMenuItem";
+            this.HelpContentsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.HelpContentsToolStripMenuItem.Text = "Help Contents";
+            this.HelpContentsToolStripMenuItem.Click += new System.EventHandler(this.HelpContentsToolStripMenuItem_Click);
+            // 
+            // HelpIndexToolStripMenuItem
+            // 
+            this.HelpIndexToolStripMenuItem.Name = "HelpIndexToolStripMenuItem";
+            this.HelpIndexToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.HelpIndexToolStripMenuItem.Text = "Help Index";
+            // 
+            // SetupToolStripMenuItem
+            // 
+            this.SetupToolStripMenuItem.Name = "SetupToolStripMenuItem";
+            this.SetupToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.SetupToolStripMenuItem.Text = "Setup";
+            this.SetupToolStripMenuItem.Click += new System.EventHandler(this.SetupToolStripMenuItem_Click);
+            // 
+            // SetupBeaconToolStripMenuItem
+            // 
+            this.SetupBeaconToolStripMenuItem.Name = "SetupBeaconToolStripMenuItem";
+            this.SetupBeaconToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.SetupBeaconToolStripMenuItem.Text = "Setup Beacon";
+            // 
+            // ExitToolStripMenuItem1
+            // 
+            this.ExitToolStripMenuItem1.Name = "ExitToolStripMenuItem1";
+            this.ExitToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.ExitToolStripMenuItem1.Text = "Exit";
+            this.ExitToolStripMenuItem1.Click += new System.EventHandler(this.ExitToolStripMenuItem1_Click);
             // 
             // mnuMode
             // 
@@ -159,6 +221,15 @@
             this.ContextMenurtbSession.Name = "ContextMenurtbSession";
             this.ContextMenurtbSession.Size = new System.Drawing.Size(61, 4);
             // 
+            // mnuCall
+            // 
+            this.mnuCall.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuCall.Image = ((System.Drawing.Image)(resources.GetObject("mnuCall.Image")));
+            this.mnuCall.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.mnuCall.Name = "mnuCall";
+            this.mnuCall.Size = new System.Drawing.Size(44, 22);
+            this.mnuCall.Text = "ARQ";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -169,6 +240,10 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "ARES Messenger Chat";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
+            this.Load += new System.EventHandler(this.Main_Load);
+            this.VisibleChanged += new System.EventHandler(this.Main_VisibleChanged);
             this.ToolStrip1.ResumeLayout(false);
             this.ToolStrip1.PerformLayout();
             this.splHorizontal.Panel1.ResumeLayout(false);
@@ -197,6 +272,14 @@
         private System.Windows.Forms.ToolStripDropDownButton mnuMode;
         private System.Windows.Forms.ContextMenuStrip ContextMenurtbSend;
         private System.Windows.Forms.ContextMenuStrip ContextMenurtbSession;
+        private System.Windows.Forms.ToolStripMenuItem mnuItemAutoID;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem HelpContentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem HelpIndexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SetupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SetupBeaconToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ExitToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripDropDownButton mnuCall;
     }
 }
 

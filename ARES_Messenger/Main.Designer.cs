@@ -40,6 +40,7 @@
             this.SetupBeaconToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMode = new System.Windows.Forms.ToolStripDropDownButton();
+            this.mnuCall = new System.Windows.Forms.ToolStripDropDownButton();
             this.ipdaemon1 = new nsoftware.IPWorks.Ipdaemon(this.components);
             this.Ftp1 = new nsoftware.IPWorks.Ftp(this.components);
             this.Http1 = new nsoftware.IPWorks.Http(this.components);
@@ -53,7 +54,14 @@
             this.rtbSend = new System.Windows.Forms.RichTextBox();
             this.ContextMenurtbSend = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextMenurtbSession = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.mnuCall = new System.Windows.Forms.ToolStripDropDownButton();
+            this.btnEnd = new System.Windows.Forms.ToolStripButton();
+            this.prgThroughput = new System.Windows.Forms.ToolStripProgressBar();
+            this.lblThroughput = new System.Windows.Forms.ToolStripLabel();
+            this.lblQueue = new System.Windows.Forms.ToolStripLabel();
+            this.mnuAnswerCQ = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnScrollLock = new System.Windows.Forms.ToolStripButton();
+            this.btnQueueData = new System.Windows.Forms.ToolStripButton();
+            this.mnuUserFiles = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToolStrip1.SuspendLayout();
             this.splHorizontal.Panel1.SuspendLayout();
             this.splHorizontal.Panel2.SuspendLayout();
@@ -65,7 +73,14 @@
             this.ToolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuFile,
             this.mnuMode,
-            this.mnuCall});
+            this.mnuCall,
+            this.btnEnd,
+            this.prgThroughput,
+            this.lblThroughput,
+            this.lblQueue,
+            this.btnScrollLock,
+            this.btnQueueData,
+            this.mnuUserFiles});
             this.ToolStrip1.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip1.Name = "ToolStrip1";
             this.ToolStrip1.Size = new System.Drawing.Size(784, 25);
@@ -145,6 +160,17 @@
             this.mnuMode.Text = "Mode: FEC";
             this.mnuMode.ToolTipText = "Select Mode ARQ or FEC";
             // 
+            // mnuCall
+            // 
+            this.mnuCall.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuCall.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuAnswerCQ});
+            this.mnuCall.Image = ((System.Drawing.Image)(resources.GetObject("mnuCall.Image")));
+            this.mnuCall.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.mnuCall.Name = "mnuCall";
+            this.mnuCall.Size = new System.Drawing.Size(44, 22);
+            this.mnuCall.Text = "ARQ";
+            // 
             // ipdaemon1
             // 
             this.ipdaemon1.About = "IP*Works! V9 [Build 5414]";
@@ -221,14 +247,70 @@
             this.ContextMenurtbSession.Name = "ContextMenurtbSession";
             this.ContextMenurtbSession.Size = new System.Drawing.Size(61, 4);
             // 
-            // mnuCall
+            // btnEnd
             // 
-            this.mnuCall.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.mnuCall.Image = ((System.Drawing.Image)(resources.GetObject("mnuCall.Image")));
-            this.mnuCall.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.mnuCall.Name = "mnuCall";
-            this.mnuCall.Size = new System.Drawing.Size(44, 22);
-            this.mnuCall.Text = "ARQ";
+            this.btnEnd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnEnd.Image = ((System.Drawing.Image)(resources.GetObject("btnEnd.Image")));
+            this.btnEnd.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnEnd.Name = "btnEnd";
+            this.btnEnd.Size = new System.Drawing.Size(31, 22);
+            this.btnEnd.Text = "End";
+            // 
+            // prgThroughput
+            // 
+            this.prgThroughput.Name = "prgThroughput";
+            this.prgThroughput.Size = new System.Drawing.Size(23, 22);
+            // 
+            // lblThroughput
+            // 
+            this.lblThroughput.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.lblThroughput.Image = ((System.Drawing.Image)(resources.GetObject("lblThroughput.Image")));
+            this.lblThroughput.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.lblThroughput.Name = "lblThroughput";
+            this.lblThroughput.Size = new System.Drawing.Size(94, 22);
+            this.lblThroughput.Text = "toolStripButton1";
+            // 
+            // lblQueue
+            // 
+            this.lblQueue.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.lblQueue.Image = ((System.Drawing.Image)(resources.GetObject("lblQueue.Image")));
+            this.lblQueue.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.lblQueue.Name = "lblQueue";
+            this.lblQueue.Size = new System.Drawing.Size(94, 22);
+            this.lblQueue.Text = "toolStripButton1";
+            // 
+            // mnuAnswerCQ
+            // 
+            this.mnuAnswerCQ.Name = "mnuAnswerCQ";
+            this.mnuAnswerCQ.Size = new System.Drawing.Size(155, 22);
+            this.mnuAnswerCQ.Text = "mnuAnswerCQ";
+            // 
+            // btnScrollLock
+            // 
+            this.btnScrollLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnScrollLock.Image = ((System.Drawing.Image)(resources.GetObject("btnScrollLock.Image")));
+            this.btnScrollLock.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnScrollLock.Name = "btnScrollLock";
+            this.btnScrollLock.Size = new System.Drawing.Size(68, 22);
+            this.btnScrollLock.Text = "Scroll Lock";
+            // 
+            // btnQueueData
+            // 
+            this.btnQueueData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnQueueData.Image = ((System.Drawing.Image)(resources.GetObject("btnQueueData.Image")));
+            this.btnQueueData.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnQueueData.Name = "btnQueueData";
+            this.btnQueueData.Size = new System.Drawing.Size(73, 22);
+            this.btnQueueData.Text = "Queue Data";
+            // 
+            // mnuUserFiles
+            // 
+            this.mnuUserFiles.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.mnuUserFiles.Image = ((System.Drawing.Image)(resources.GetObject("mnuUserFiles.Image")));
+            this.mnuUserFiles.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.mnuUserFiles.Name = "mnuUserFiles";
+            this.mnuUserFiles.Size = new System.Drawing.Size(69, 22);
+            this.mnuUserFiles.Text = "User Files";
             // 
             // Main
             // 
@@ -280,6 +362,14 @@
         private System.Windows.Forms.ToolStripMenuItem SetupBeaconToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ExitToolStripMenuItem1;
         private System.Windows.Forms.ToolStripDropDownButton mnuCall;
+        private System.Windows.Forms.ToolStripButton btnEnd;
+        private System.Windows.Forms.ToolStripProgressBar prgThroughput;
+        private System.Windows.Forms.ToolStripLabel lblThroughput;
+        private System.Windows.Forms.ToolStripLabel lblQueue;
+        private System.Windows.Forms.ToolStripMenuItem mnuAnswerCQ;
+        private System.Windows.Forms.ToolStripButton btnScrollLock;
+        private System.Windows.Forms.ToolStripButton btnQueueData;
+        private System.Windows.Forms.ToolStripDropDownButton mnuUserFiles;
     }
 }
 

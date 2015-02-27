@@ -118,7 +118,7 @@ namespace ARES_Messenger
 
 
         // subroutine to update the Session rich text box from the queSessionEvents
-        // capture rtbSend Foucus status upon entry
+        // capture rtbSend Focus status upon entry
         //InitializeComponent()
         bool static_UpdateSessionDisplay_blnLFAppended;
         readonly Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag static_UpdateSessionDisplay_strRcvTxtFECLogBuffer_Init = new Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag();
@@ -800,7 +800,7 @@ namespace ARES_Messenger
                 intARDOP_WinProcessID = -1;
                 try
                 {
-                    intARDOP_WinProcessID = Interaction.Shell(Globals.strExecutionDirectory + "ARDOP_Win.exe TCPIP " + intTCPIPPort.ToString + " " + strTCPIPAddress, AppWinStyle.NormalFocus);
+                    intARDOP_WinProcessID = Interaction.Shell(Globals.strExecutionDirectory + "ARDOP_Win.exe TCPIP " + Globals.intTCPIPPort.ToString() + " " + Globals.strTCPIPAddress, AppWinStyle.NormalFocus);
                 }
                 catch (Exception ex)
                 {
@@ -810,25 +810,25 @@ namespace ARES_Messenger
 
                 if (intARDOP_WinProcessID <= 0)
                 {
-                    queSessionEvents.Enqueue("F *** Failure to start ARDOP_Win.exe virtual TNC!" + Constants.vbCr);
+                    Globals.queSessionEvents.Enqueue("F *** Failure to start ARDOP_Win.exe virtual TNC!" + Constants.vbCr);
                     break; // TODO: might not be correct. Was : Exit Do
                 }
                 else
                 {
-                    objINIFile.WriteInteger("ARDOP_Win", "Process Id", intARDOP_WinProcessID);
-                    objINIFile.Flush();
+                    Globals.objINIFile.WriteInteger("ARDOP_Win", "Process Id", intARDOP_WinProcessID);
+                    Globals.objINIFile.Flush();
                     blnTNCIsOpen = true;
                 }
                 if (OpenTNC_TCPIPPort() == false)
                 {
-                    queSessionEvents.Enqueue("F *** Failure to open TCPIP Port " + intTCPIPPort.ToString + " to ARDOP_Win.exe" + Constants.vbCr + "Check and make sure port is unused." + Constants.vbCr);
+                    Globals.queSessionEvents.Enqueue("F *** Failure to open TCPIP Port " + Globals.intTCPIPPort.ToString() + " to ARDOP_Win.exe" + Constants.vbCr + "Check and make sure port is unused." + Constants.vbCr);
                     break; // TODO: might not be correct. Was : Exit Do
                 }
                 blnTNCIsOpen = true;
                 if (SendCommandToTNC("VERSION") == false)
                     break; // TODO: might not be correct. Was : Exit Do
                 //If SendCommandToTNC("CODEC") = False Then Exit Do
-                if (SendCommandToTNC("MYCALL " + strMyCallsign) == false)
+                if (SendCommandToTNC("MYCALL " + Globals.strMyCallsign) == false)
                     break; // TODO: might not be correct. Was : Exit Do
                 blnTNCIsOpen = true;
                 //If SendCommandToTNC("DEBUGLOG " & blnEnableDebugLogs.ToString) = False Then Exit Do
@@ -850,11 +850,11 @@ namespace ARES_Messenger
                 //If SendCommandToTNC("CWONARQID " & blnMorseId.ToString) = False Then Exit Do
                 //If SendCommandToTNC("BUFFER") = False Then Exit Do
                 //blnTNCIsOpen = SendCommandToTNC("CODEC True")
-                blnARQCalling = false;
+                Globals.blnARQCalling = false;
                 break; // TODO: might not be correct. Was : Exit Do
             } while (true);
             if (!blnTNCIsOpen)
-                queSessionEvents.Enqueue("F *** Failure to open Open ARDOP Win TNC." + Constants.vbCr);
+                Globals.queSessionEvents.Enqueue("F *** Failure to open Open ARDOP Win TNC." + Constants.vbCr);
             this.Cursor = Cursors.Default;
         }
 
@@ -870,22 +870,22 @@ namespace ARES_Messenger
                 objTNCTCPIPPort = null;
             }
             objTNCTCPIPPort = new nsoftware.IPWorks.Ipport();
-            System.DateTime dttStartOpen = Now;
-            while (Now.Subtract(dttStartOpen).TotalSeconds < 10)
+            System.DateTime dttStartOpen = DateTime.Now;
+            while (DateTime.Now.Subtract(dttStartOpen).TotalSeconds < 10)
             {
                 try
                 {
                     objTNCTCPIPPort.Connected = false;
-                    Threading.Thread.Sleep(100);
+                    Thread.Sleep(100);
                     objTNCTCPIPPort.Linger = true;
                     objTNCTCPIPPort.KeepAlive = true;
                     objTNCTCPIPPort.AcceptData = true;
-                    objTNCTCPIPPort.RemoteHost = strTCPIPAddress;
-                    objTNCTCPIPPort.RemotePort = intTCPIPPort;
+                    objTNCTCPIPPort.RemoteHost = Globals.strTCPIPAddress;
+                    objTNCTCPIPPort.RemotePort = Globals.intTCPIPPort;
                     blnRDY = false;
                     blnData = false;
                     objTNCTCPIPPort.Connected = true;
-                    Threading.Thread.Sleep(1000);
+                    Thread.Sleep(1000);
                 }
                 catch
                 {
@@ -897,9 +897,9 @@ namespace ARES_Messenger
                 // once connected wait for CMD response
                 while (objTNCTCPIPPort.Connected)
                 {
-                    if (Now.Subtract(dttStartOpen).TotalSeconds > 10)
+                    if (DateTime.Now.Subtract(dttStartOpen).TotalSeconds > 10)
                     {
-                        Exceptions("[Main.OpenTNC_TCPIPPort] RDY Response 10 sec Timeout");
+                        Globals.Exceptions("[Main.OpenTNC_TCPIPPort] RDY Response 10 sec Timeout");
                         return false;
                     }
                     if (blnRDY == true)
@@ -918,7 +918,7 @@ namespace ARES_Messenger
                     // wait 100ms
                 }
             }
-            Exceptions("[Main.OpenTNC_TCPIPPort] 10 sec Timeout. Could not connect to TNC TCPIP Port on port " + intTCPIPPort.ToString);
+            Globals.Exceptions("[Main.OpenTNC_TCPIPPort] 10 sec Timeout. Could not connect to TNC TCPIP Port on port " + Globals.intTCPIPPort.ToString());
             return false;
         }
 
@@ -934,7 +934,7 @@ namespace ARES_Messenger
             // Form byt array to send with CRC
             // TODO:  Complete for Serial and BlueTooth
 
-            if (blnRestarting)
+            if (Globals.blnRestarting)
                 return false;
             // True
             if (objTNCTCPIPPort == null)
@@ -942,23 +942,23 @@ namespace ARES_Messenger
             //True
             if (objTNCTCPIPPort.Connected == false)
                 return false;
-            System.DateTime dttStartWait = Now;
-            while (Now.Subtract(dttStartWait).TotalSeconds < 5 & (!blnRDY))
+            System.DateTime dttStartWait = DateTime.Now;
+            while (DateTime.Now.Subtract(dttStartWait).TotalSeconds < 5 & (!blnRDY))
             {
                 Thread.Sleep(50);
             }
             if (!blnRDY)
             {
-                Exception("[SendCommandToTNC] Err: Timeout waiting for RDY");
+                Globals.Exception("[SendCommandToTNC] Err: Timeout waiting for RDY");
                 return false;
             }
             blnRDY = false;
             try
             {
-                byte[] bytToSend = GetBytes("C:" + strCommand.Trim.ToUpper + Constants.vbCr);
+                byte[] bytToSend = Globals.GetBytes("C:" + strCommand.Trim().ToUpper() + Constants.vbCr);
                 Array.Resize(ref bytToSend, bytToSend.Length + 2);
                 // resize 2 bytes larger for CRC
-                GenCRC16(bytToSend, 2, bytToSend.Length - 3, 0xffff);
+                Globals.GenCRC16(ref bytToSend, 2, bytToSend.Length - 3, 0xffff);
                 // Generate CRC starting after "c:"  
                 try
                 {
@@ -967,13 +967,13 @@ namespace ARES_Messenger
                 }
                 catch
                 {
-                    Exception("[SendCommandToTNC] Err: " + Err.Description);
+                    //Globals.Exception("[SendCommandToTNC] Err: " + Err.Description);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Exception("[SendCommandToTNC] Err: " + ex.ToString);
+                Globals.Exception("[SendCommandToTNC] Err: " + ex.ToString());
             }
             return false;
         }
@@ -1169,11 +1169,11 @@ namespace ARES_Messenger
                         {
                             Array.Resize(ref bytCmd, bytCmd.Length - 2);
                             // Drop off the CRC
-                            static_objTNCTCPIPPort_OnDataIn_strCommandFromTNC = GetString(bytCmd);
+                            static_objTNCTCPIPPort_OnDataIn_strCommandFromTNC = Globals.GetString(bytCmd);
                             Debug.WriteLine("[OnDataIn] Command Received: " + static_objTNCTCPIPPort_OnDataIn_strCommandFromTNC);
 
                             // Process the received and CRC checked command here:
-                            ProcessCmdFromTNC(static_objTNCTCPIPPort_OnDataIn_strCommandFromTNC.Trim.ToUpper);
+                            ProcessCmdFromTNC(static_objTNCTCPIPPort_OnDataIn_strCommandFromTNC.Trim().ToUpper());
                         }
                         else
                         {
@@ -1201,7 +1201,7 @@ namespace ARES_Messenger
                     if (bytTNCIBData_CmdBuffer.Length - static_objTNCTCPIPPort_OnDataIn_intDataStartPtr >= 4)
                     {
                         // Compute the byte count to receive plus 2 additional bytes for the 16 bit CRC
-                        static_objTNCTCPIPPort_OnDataIn_intDataBytesToReceive = (bytTNCIBData_CmdBuffer(intTNCIBData_CmdPtr + 2) << 8) + bytTNCIBData_CmdBuffer(intTNCIBData_CmdPtr + 3) + 2;
+                        static_objTNCTCPIPPort_OnDataIn_intDataBytesToReceive = (bytTNCIBData_CmdBuffer[intTNCIBData_CmdPtr + 2] << 8) + bytTNCIBData_CmdBuffer[intTNCIBData_CmdPtr + 3] + 2;
                         // includes 2 byte CRC
                         intTNCIBData_CmdPtr = intTNCIBData_CmdPtr + 4;
                         // advance pointer past "d:" and byte count
@@ -1213,7 +1213,7 @@ namespace ARES_Messenger
                 {
                     for (int i = 0; i <= bytTNCIBData_CmdBuffer.Length - intTNCIBData_CmdPtr - 3; i++)
                     {
-                        static_objTNCTCPIPPort_OnDataIn_bytDataFromTNC(static_objTNCTCPIPPort_OnDataIn_intDataBytePtr) = bytTNCIBData_CmdBuffer(intTNCIBData_CmdPtr);
+                        static_objTNCTCPIPPort_OnDataIn_bytDataFromTNC[static_objTNCTCPIPPort_OnDataIn_intDataBytePtr] = bytTNCIBData_CmdBuffer[intTNCIBData_CmdPtr];
                         static_objTNCTCPIPPort_OnDataIn_intDataBytePtr += 1;
                         intTNCIBData_CmdPtr += 1;
                         static_objTNCTCPIPPort_OnDataIn_intDataBytesToReceive -= 1;
@@ -1254,7 +1254,7 @@ namespace ARES_Messenger
             }
             if (strCMD.StartsWith("VERSION"))
             {
-                queSessionEvents.Enqueue("P  *** TNC " + strCMD + Constants.vbLf);
+                Globals.queSessionEvents.Enqueue("P  *** TNC " + strCMD + Constants.vbLf);
             }
         }
         private void ARQToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
@@ -1263,13 +1263,13 @@ namespace ARES_Messenger
 
             mnuMode.Text = "Mode: ARQ";
             SendCommandToTNC("MODE ARQ");
-            strMode = "ARQ";
-            queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: ARQ" + Constants.vbCrLf);
+            Globals.strMode = "ARQ";
+            Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: ARQ" + Constants.vbCrLf);
             this.rtbSend.Enabled = true;
             mnuPasteAndSend.Enabled = true;
             mnuPaste.Enabled = true;
             mnuCall.Enabled = true;
-            blnARQCalling = false;
+            Globals.blnARQCalling = false;
         }
 
 
@@ -1311,14 +1311,14 @@ namespace ARES_Messenger
             }
             catch
             {
-                Exceptions("[Main.Log View Click] " + Err.Description);
+                Globals.Exceptions("[Main.Log View Click] " + Err.Description);
             }
         }
 
-        protected override void Finalize()
+        /*protected override void Finalize()
         {
             base.Finalize();
-        }
+        }*/
 
 
         private void objTCPData_OnDataIn(object sender, nsoftware.IPWorks.IpportDataInEventArgs e)
@@ -1651,15 +1651,15 @@ namespace ARES_Messenger
             blnEnableAutoupdate = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "EnableAutoUpdate", "True"));
             blnAutoUpdateTest = Convert.ToBoolean(objINIFile.GetString("Main", "Test Autoupdate", "False"));
             blnEnableBeacon = Convert.ToBoolean(objINIFile.GetString("Main", "Enable Beacon", "False"));
-            strFECBeaconText = objINIFile.GetString("Main", "FEC Beacon Text", "DE " + strMyCallsign);
-            strARQBeaconText = objINIFile.GetString("Main", "ARQ Beacon Text", "H4 ARQ <" + strMyCallsign);
-            intBeaconInterval = objINIFile.GetInteger("Main", "Beacon Interval", 20);
-            if (blnEnableBeacon)
-                dttNextBeacon = Now.AddMinutes(intBeaconInterval);
-            intFrontPorch = objINIFile.GetInteger("ARDOP Chat", "FrontPorch", 125);
-            intBackPorch = objINIFile.GetInteger("ARDOP Chat", "BackPorch", 0);
-            strMode = objINIFile.GetString("Main", "Startup Mode", "FEC");
-            switch (strMode)
+            Globals.strFECBeaconText = Globals.objINIFile.GetString("Main", "FEC Beacon Text", "DE " + Globals.strMyCallsign);
+            Globals.strARQBeaconText = Globals.objINIFile.GetString("Main", "ARQ Beacon Text", "H4 ARQ <" + Globals.strMyCallsign);
+            Globals.intBeaconInterval = Globals.objINIFile.GetInteger("Main", "Beacon Interval", 20);
+            if (Globals.blnEnableBeacon)
+                Globals.dttNextBeacon = DateTime.Now.AddMinutes(Globals.intBeaconInterval);
+            Globals.intFrontPorch = Globals.objINIFile.GetInteger("ARDOP Chat", "FrontPorch", 125);
+            Globals.intBackPorch = Globals.objINIFile.GetInteger("ARDOP Chat", "BackPorch", 0);
+            Globals.strMode = Globals.objINIFile.GetString("Main", "Startup Mode", "FEC");
+            switch (Globals.strMode)
             {
                 case "FEC":
                     mnuMode.Text = "Mode: FEC";
@@ -1686,13 +1686,13 @@ namespace ARES_Messenger
             Int32 intWidth = default(Int32);
             Int32 intHeight = default(Int32);
             // Set inital window position and size...
-            intTop = objINIFile.GetInteger("ARDOP Chat", "Top", 100);
-            intLeft = objINIFile.GetInteger("ARDOP Chat", "Left", 100);
-            intWidth = objINIFile.GetInteger("ARDOP Chat", "Width", 680);
-            intHeight = objINIFile.GetInteger("ARDOP Chat", "Height", 360);
+            intTop = Globals.objINIFile.GetInteger("ARDOP Chat", "Top", 100);
+            intLeft = Globals.objINIFile.GetInteger("ARDOP Chat", "Left", 100);
+            intWidth = Globals.objINIFile.GetInteger("ARDOP Chat", "Width", 680);
+            intHeight = Globals.objINIFile.GetInteger("ARDOP Chat", "Height", 360);
             for (int i = 0; i <= screen.Length - 1; i++)
             {
-                if (screen(i).Bounds.Top <= intTop & screen(i).Bounds.Bottom >= (intTop + intHeight) & screen(i).Bounds.Left <= intLeft & screen(i).Bounds.Right >= (intLeft + intWidth))
+                if (screen[i].Bounds.Top <= intTop & screen[i].Bounds.Bottom >= (intTop + intHeight) & screen[i].Bounds.Left <= intLeft & screen[i].Bounds.Right >= (intLeft + intWidth))
                 {
                     // Position window in its last location only if it is within the bounds of the screen
                     this.Top = intTop;
@@ -1712,48 +1712,48 @@ namespace ARES_Messenger
                 this.Height = 360;
             }
 
-            string strBaseCallsign = GetBaseCallsign(strMyCallsign);
-            InitializeContactGrid();
+            string strBaseCallsign = Globals.GetBaseCallsign(Globals.strMyCallsign);
+            //InitializeContactGrid();
             this.Text = "ARDOP Chat " + Application.ProductVersion;
-            queSessionEvents.Enqueue("P " + Constants.vbLf);
-            if (blnEnableAutoupdate)
+            Globals.queSessionEvents.Enqueue("P " + Constants.vbLf);
+            if (Globals.blnEnableAutoupdate)
             {
-                queSessionEvents.Enqueue("P  *** Startup of ARDOP Chat Ver " + Application.ProductVersion + " ; Auto Update Enabled using HTTP port 8776" + Constants.vbLf);
+                Globals.queSessionEvents.Enqueue("P  *** Startup of ARDOP Chat Ver " + Application.ProductVersion + " ; Auto Update Enabled using HTTP port 8776" + Constants.vbLf);
             }
             else
             {
-                queSessionEvents.Enqueue("P  *** Startup of ARDOP Chat Ver " + Application.ProductVersion + " ; Auto Update Disabled" + Constants.vbLf);
+                Globals.queSessionEvents.Enqueue("P  *** Startup of ARDOP Chat Ver " + Application.ProductVersion + " ; Auto Update Disabled" + Constants.vbLf);
             }
-            if (blnAutoUpdateTest)
-                queSessionEvents.Enqueue("P  *** Start Autoupdate Test in approx 20 sec ***" + Constants.vbLf);
-            queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: " + strMode + Constants.vbCrLf);
-            if (!blnAutoID)
+            if (Globals.blnAutoUpdateTest)
+                Globals.queSessionEvents.Enqueue("P  *** Start Autoupdate Test in approx 20 sec ***" + Constants.vbLf);
+            Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: " + Globals.strMode + Constants.vbCrLf);
+            if (!Globals.blnAutoID)
             {
                 mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
                 mnuItemAutoID.Text = "Auto ID is Off";
-                queSessionEvents.Enqueue("P  *** Auto ID is OFF" + Constants.vbCrLf);
+                Globals.queSessionEvents.Enqueue("P  *** Auto ID is OFF" + Constants.vbCrLf);
             }
             else
             {
                 mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
                 mnuItemAutoID.Text = "Auto ID is On";
-                queSessionEvents.Enqueue("P  *** Auto ID is ON" + Constants.vbCrLf);
+                Globals.queSessionEvents.Enqueue("P  *** Auto ID is ON" + Constants.vbCrLf);
             }
             try
             {
                 splHorizontal.SplitterDistance = intHorizSplitDst;
-                splVertical.SplitterDistance = intVertSplitDst;
+                //splVertical.SplitterDistance = intVertSplitDst;
             }
             catch
             {
             }
 
 
-            Log("BLANK");
+            Globals.Log("BLANK");
             // Setup auto update use test mode if in Source code directory
             objAutoupdate = new Autoupdate(blnAutoUpdateTest, (!blnEnableAutoupdate));
             Application.DoEvents();
-            Log("*** Startup of ARDOP Chat Ver " + Application.ProductVersion + " *** " + Constants.vbCrLf);
+            Globals.Log("*** Startup of ARDOP Chat Ver " + Application.ProductVersion + " *** " + Constants.vbCrLf);
             if ((objRadio == null))
             {
                 objRadio = new Radio();
@@ -1769,7 +1769,7 @@ namespace ARES_Messenger
             blnStartingARDOPTNC = false;
 
             //queSessionEvents.Enqueue("P " & vbLf)
-            Log("BLANK");
+            Globals.Log("BLANK");
             tmrPoll.Start();
             this.Focus();
         }
@@ -1937,7 +1937,7 @@ namespace ARES_Messenger
             if (strTextToSend.Length > 0)
             {
                 objTCPData.DataToSend = strTextToSend;
-                if (strMode.IndexOf("FEC") != -1 & Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                if (strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
                 {
                     LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
                     dttLastFECSend = System.DateTime.UtcNow;
@@ -1964,19 +1964,19 @@ namespace ARES_Messenger
         {
             if (!blnIgnoreManualSessionScroll)
             {
-                dttScrollLocked = Now;
+                dttScrollLocked = DateTime.Now;
                 blnScrollLocked = true;
                 btnScrollLock.Visible = true;
                 rtbSession.SuspendLayout();
             }
         }
 
-        private void splVertical_SplitterMoved(object sender, System.Windows.Forms.SplitterEventArgs e)
+        /*private void splVertical_SplitterMoved(object sender, System.Windows.Forms.SplitterEventArgs e)
         {
             Debug.WriteLine("Vert Splitter Distance = " + splVertical.SplitterDistance.ToString);
             //If splVertical.SplitterDistance > 480 Then splVertical.SplitterDistance = 480
             //If splVertical.SplitterDistance > grdContacts.Width + 20 Then splVertical.SplitterDistance = grdContacts.Width + 20
-        }
+        }*/
 
         private void rtbSend_GotFocus(object sender, System.EventArgs e)
         {
@@ -1991,7 +1991,7 @@ namespace ARES_Messenger
 
         private void rtbSend_KeyDown1(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if (e.KeyCode == 17)
+            if (e.KeyCode == Keys.ControlKey)
             {
                 blnCtrlKey = true;
             }
@@ -2001,9 +2001,9 @@ namespace ARES_Messenger
         private void rtbSend_KeyPress1(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             strLastSendKey = e.KeyChar;
-            if (((strLastSendKey == Constants.vbLf) & blnCtrlKey & blnSendCtrlCr) | ((strLastSendKey == Constants.vbCr) & (blnSendCR | blnSendSpace)))
+            if (((strLastSendKey == Constants.vbLf) & blnCtrlKey & Globals.blnSendCtrlCr) | ((strLastSendKey == Constants.vbCr) & (Globals.blnSendCR | Globals.blnSendSpace)))
             {
-                if (strMode == "ARQ" & !blnARQConnected)
+                if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
                 {
                     Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
                     return;
@@ -2015,9 +2015,9 @@ namespace ARES_Messenger
                 if (strTextToSend.Length > 0)
                 {
                     objTCPData.DataToSend = strTextToSend;
-                    dttNextBeacon = Now.AddMinutes(intBeaconInterval);
+                    Globals.dttNextBeacon = DateTime.Now.AddMinutes(Globals.intBeaconInterval);
                     // hold off any beacons for the beacon interval
-                    if (strMode.IndexOf("FEC") != -1 & Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                    if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
                     {
                         LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
                         dttLastFECSend = System.DateTime.UtcNow;
@@ -2026,9 +2026,9 @@ namespace ARES_Messenger
                 intRtbSendPtr = rtbSend.Text.Length;
                 RepaintRTBSend(ref intRtbSendPtr);
             }
-            else if (strLastSendKey == " " & rtbSend.Text.EndsWith(" ") & blnSendSpace)
+            else if (strLastSendKey == " " & rtbSend.Text.EndsWith(" ") & Globals.blnSendSpace)
             {
-                if (strMode == "ARQ" & !blnARQConnected)
+                if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
                 {
                     Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
                     return;
@@ -2038,7 +2038,7 @@ namespace ARES_Messenger
                 if (strTextToSend.Length > 0)
                 {
                     objTCPData.DataToSend = strTextToSend;
-                    if (strMode.IndexOf("FEC") != -1 & Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                    if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
                     {
                         LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
                         dttLastFECSend = System.DateTime.UtcNow;
@@ -2113,7 +2113,7 @@ namespace ARES_Messenger
 
         private void rtbSend_TextChanged(object sender, System.EventArgs e)
         {
-            intNewLineIndex = rtbSend.GetFirstCharIndexOfCurrentLine;
+            intNewLineIndex = rtbSend.GetFirstCharIndexOfCurrentLine();
             if (rtbSend.Text.Length < intRtbSendPtr & !blnClearingTextBoxes)
             {
                 rtbSend.Undo();
@@ -2152,15 +2152,15 @@ namespace ARES_Messenger
         private void SetupToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
         {
             ChatSetupForm dlgSetup = new ChatSetupForm();
-            if (dlgSetup.ShowDialog() == Windows.Forms.DialogResult.OK)
+            if (dlgSetup.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                objINIFile.WriteInteger("ARDOP Chat", "Horiz Splitter", Convert.ToInt32(100 * rtbSession.Height / (rtbSession.Height + rtbSend.Height)));
-                objINIFile.WriteInteger("ARDOP Chat", "Top", this.Top);
-                objINIFile.WriteInteger("ARDOP Chat", "Left", this.Left);
-                objINIFile.WriteInteger("ARDOP Chat", "Width", this.Width);
-                objINIFile.WriteInteger("ARDOP Chat", "Height", this.Height);
-                objINIFile.Flush();
-                queSessionEvents.Enqueue("A  *** ARDOP Win TNC restarted with updated parameters." + Constants.vbCrLf);
+                Globals.objINIFile.WriteInteger("ARDOP Chat", "Horiz Splitter", Convert.ToInt32(100 * rtbSession.Height / (rtbSession.Height + rtbSend.Height)));
+                Globals.objINIFile.WriteInteger("ARDOP Chat", "Top", this.Top);
+                Globals.objINIFile.WriteInteger("ARDOP Chat", "Left", this.Left);
+                Globals.objINIFile.WriteInteger("ARDOP Chat", "Width", this.Width);
+                Globals.objINIFile.WriteInteger("ARDOP Chat", "Height", this.Height);
+                Globals.objINIFile.Flush();
+                Globals.queSessionEvents.Enqueue("A  *** ARDOP Win TNC restarted with updated parameters." + Constants.vbCrLf);
                 Application.DoEvents();
                 tmrPoll.Stop();
                 tmrStartup.Start();

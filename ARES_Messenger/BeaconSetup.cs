@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace ARES_Messenger
 {
-    public partial class Beacon : Form
+    public partial class BeaconSetup : Form
     {
-        public Beacon()
+        public BeaconSetup()
         {
             InitializeComponent();
         }

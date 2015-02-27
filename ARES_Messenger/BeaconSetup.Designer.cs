@@ -1,6 +1,6 @@
 ﻿namespace ARES_Messenger
 {
-    partial class Beacon
+    partial class BeaconSetup
     {
         /// <summary>
         /// Required designer variable.

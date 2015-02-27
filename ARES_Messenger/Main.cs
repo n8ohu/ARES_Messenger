@@ -762,7 +762,7 @@ namespace ARES_Messenger
 
         private void StartARDOPWinTNC()
         {
-            if (My.Computer.FileSystem.FileExists(Globals.strExecutionDirectory + "ARDOP_Win.exe") == false)
+            if (File.Exists(Globals.strExecutionDirectory + "ARDOP_Win.exe") == false)
             {
                 Globals.Exceptions("*** ARDOP_Win.exe is not found in the program directory..." + Constants.vbCr);
                 Interaction.MsgBox("ARDOP_Win.exe is not found in the program directory...", MsgBoxStyle.Information);
@@ -1273,12 +1273,13 @@ namespace ARES_Messenger
         }
 
 
+
         private void FECToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
         {
             SendCommandToTNC("MODE FEC");
             mnuMode.Text = "Mode: FEC";
-            strMode = "FEC";
-            queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: FEC" + Constants.vbCrLf);
+            Globals.strMode = "FEC";
+            Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: FEC" + Constants.vbCrLf);
             mnuCall.Enabled = false;
             this.rtbSend.Enabled = true;
             mnuPasteAndSend.Enabled = true;
@@ -1305,13 +1306,13 @@ namespace ARES_Messenger
                     }
                     catch
                     {
-                        Interaction.MsgBox(Err.Description, MsgBoxStyle.Information);
+                        //Interaction.MsgBox(Err.Description, MsgBoxStyle.Information);
                     }
                 }
             }
             catch
             {
-                Globals.Exceptions("[Main.Log View Click] " + Err.Description);
+                //Globals.Exceptions("[Main.Log View Click] " + Err.Description);
             }
         }
 
@@ -1323,11 +1324,11 @@ namespace ARES_Messenger
 
         private void objTCPData_OnDataIn(object sender, nsoftware.IPWorks.IpportDataInEventArgs e)
         {
-            DataType enmDataType = default(DataType);
+            Globals.DataType enmDataType = default(Globals.DataType);
 
-            byte[] bytReceived = StripTypeFromData(e.TextB, enmDataType);
+            byte[] bytReceived = Globals.StripTypeFromData(e.TextB, ref enmDataType);
             string strReceived = "";
-            if (strCharacterSet == "UTF-8")
+            if (Globals.strCharacterSet == "UTF-8")
             {
                 UTF8Encoding objUTF8 = new UTF8Encoding();
                 strReceived = objUTF8.GetString(bytReceived);
@@ -1335,33 +1336,33 @@ namespace ARES_Messenger
             else
             {
                 //Dim objASCII As New u
-                strReceived = GetString(bytReceived);
+                strReceived = Globals.GetString(bytReceived);
             }
             switch (enmDataType)
             {
-                case DataType.RcvdFEC:
-                    queSessionEvents.Enqueue("B " + strReceived);
+                case Globals.DataType.RcvdFEC:
+                    Globals.queSessionEvents.Enqueue("B " + strReceived);
                     // Black normal text 
                     UpdateInboundThroughput(bytReceived.Length);
                     // Only compute inbound throughput on good data
                     break;
-                case DataType.SentARQ:
-                case DataType.SentFEC:
-                    queSessionEvents.Enqueue("G " + strReceived);
+                case Globals.DataType.SentARQ:
+                case Globals.DataType.SentFEC:
+                    Globals.queSessionEvents.Enqueue("G " + strReceived);
                     // Green text 
                     break;
-                case DataType.RcvdARQ:
-                    queSessionEvents.Enqueue("Q " + strReceived);
+                case Globals.DataType.RcvdARQ:
+                    Globals.queSessionEvents.Enqueue("Q " + strReceived);
                     // Black Bold text (ARQ) 
                     UpdateInboundThroughput(bytReceived.Length);
                     // Only compute inbound throughput on good data
                     break;
-                case DataType.StrikeThru:
-                    queSessionEvents.Enqueue("R " + strReceived);
+                case Globals.DataType.StrikeThru:
+                    Globals.queSessionEvents.Enqueue("R " + strReceived);
                     // Red strike through text
                     break;
-                case DataType.RcvdFECRbst:
-                    queSessionEvents.Enqueue("T " + strReceived);
+                case Globals.DataType.RcvdFECRbst:
+                    Globals.queSessionEvents.Enqueue("T " + strReceived);
                     // Navy Bold text (FEC Robust) 
                     UpdateInboundThroughput(bytReceived.Length);
                     // Only compute inbound throughput on good data
@@ -1394,21 +1395,21 @@ namespace ARES_Messenger
             {
                 OpenFileDialog dlgFile = new OpenFileDialog();
                 dlgFile.Multiselect = true;
-                dlgFile.InitialDirectory = strUserFilesDirectory;
+                dlgFile.InitialDirectory = Globals.strUserFilesDirectory;
                 dlgFile.Title = "Select a File(s) to Delete...";
                 dlgFile.Filter = "Text File(.txt)|*.txt";
                 dlgFile.RestoreDirectory = true;
-                if (dlgFile.ShowDialog() == Windows.Forms.DialogResult.OK)
+                if (dlgFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     for (int i = 0; i <= dlgFile.FileNames.Length - 1; i++)
                     {
                         try
                         {
-                            if (IO.File.Exists(dlgFile.FileName))
+                            if (File.Exists(dlgFile.FileName))
                             {
-                                if (Interaction.MsgBox("Confirm Delete of file " + dlgFile.FileNames(i), MsgBoxStyle.OkCancel) == MsgBoxResult.Ok)
+                                if (Interaction.MsgBox("Confirm Delete of file " + dlgFile.FileNames[i], MsgBoxStyle.OkCancel) == MsgBoxResult.Ok)
                                 {
-                                    IO.File.Delete(dlgFile.FileNames(i));
+                                    File.Delete(dlgFile.FileNames[i]);
                                 }
                             }
                             else
@@ -1419,14 +1420,14 @@ namespace ARES_Messenger
                         }
                         catch
                         {
-                            Interaction.MsgBox(Err.Description, MsgBoxStyle.Information);
+                            //Interaction.MsgBox(Err.Description, MsgBoxStyle.Information);
                         }
                     }
                 }
             }
             catch
             {
-                Exceptions("[Main.mnuUserFiles.Click] " + Err.Description);
+                //Globals.Exceptions("[Main.mnuUserFiles.Click] " + Err.Description);
             }
         }
 
@@ -1439,25 +1440,25 @@ namespace ARES_Messenger
                 dlgFile.Multiselect = false;
                 dlgFile.CheckFileExists = true;
                 dlgFile.Title = "Select a File to Paste to Kbd Text and send ...";
-                dlgFile.InitialDirectory = strUserFilesDirectory;
+                dlgFile.InitialDirectory = Globals.strUserFilesDirectory;
                 dlgFile.Filter = "Text File(.txt)|*.txt";
                 dlgFile.RestoreDirectory = true;
-                if (dlgFile.ShowDialog() == Windows.Forms.DialogResult.OK)
+                if (dlgFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    string strFileData = My.Computer.FileSystem.ReadAllText(dlgFile.FileName);
+                    string strFileData = File.ReadAllText(dlgFile.FileName);
                     rtbSend.Text = rtbSend.Text + strFileData;
                     // Trim of FileData removed rev 0.1.7.2
                     // This positions the cursor at the end of the added text from file.
                     rtbSend.AppendText(" ");
                     rtbSend.Undo();
-                    strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
+                    Globals.strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
                     btnQueueData.PerformClick();
                 }
                 rtbSend.Focus();
             }
             catch (Exception ex)
             {
-                Exceptions("[Main.mnuPaste.Click] Err: " + Err.Number.ToString + " Exception: " + ex.ToString);
+                //Globals.Exceptions("[Main.mnuPaste.Click] Err: " + Err.Number.ToString() + " Exception: " + ex.ToString());
             }
         }
 
@@ -1469,24 +1470,24 @@ namespace ARES_Messenger
                 string strFileName = "";
                 dlgFile.Multiselect = false;
                 dlgFile.Title = "Enter file to Creat...";
-                dlgFile.InitialDirectory = strUserFilesDirectory;
+                dlgFile.InitialDirectory = Globals.strUserFilesDirectory;
                 dlgFile.Filter = "Text File(.txt)|*.txt";
                 dlgFile.CheckFileExists = false;
                 dlgFile.RestoreDirectory = true;
-                if (dlgFile.ShowDialog() == Windows.Forms.DialogResult.OK)
+                if (dlgFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    if (IO.File.Exists(dlgFile.FileName))
+                    if (File.Exists(dlgFile.FileName))
                     {
                         Interaction.MsgBox("File " + dlgFile.FileName + " already exists!");
                         return;
                     }
                     else
                     {
-                        IO.File.Create(dlgFile.FileName);
+                        File.Create(dlgFile.FileName);
                         strFileName = dlgFile.FileName;
                     }
-                    System.DateTime dttStartWait = Now;
-                    strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
+                    System.DateTime dttStartWait = DateTime.Now;
+                    Globals.strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
                 }
                 //  If strFileName <> "" Then Process.Start(strFileName)
             }
@@ -1607,10 +1608,10 @@ namespace ARES_Messenger
 
         private void ToolStripLabel1_Click(System.Object sender, System.EventArgs e)
         {
-            if (!blnAborting)
+            if (!Globals.blnAborting)
             {
-                queSessionEvents.Enqueue("F " + Constants.vbCrLf + "*** Manual Abort Request" + Constants.vbCrLf);
-                blnAborting = true;
+                Globals.queSessionEvents.Enqueue("F " + Constants.vbCrLf + "*** Manual Abort Request" + Constants.vbCrLf);
+                Globals.blnAborting = true;
             }
         }
 
@@ -1626,7 +1627,7 @@ namespace ARES_Messenger
             Globals.intTCPIPPort = Globals.objINIFile.GetInteger("ARDOP Chat", "TCPIPPort", 8515);
             Globals.intFontSize = Globals.objINIFile.GetInteger("ARDOP Chat", "TextBoxFontSize", 10);
             //grdContacts.Font = new System.Drawing.Font("Microsoft Sans Serif", intFontSize, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
-            rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", intFontSize, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+            rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", Globals.intFontSize, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
             Globals.intARQTimeout = Globals.objINIFile.GetInteger("ARDOP Chat", "ARQTimeout", 90);
             Globals.intH4DriveLevel = Globals.objINIFile.GetInteger("ARDOP Chat", "DriveLevel", 100);
             Globals.intTuning = Globals.objINIFile.GetInteger("ARDOP Chat", "Tuning", 100);
@@ -1643,14 +1644,14 @@ namespace ARES_Messenger
             Globals.strMyCallsign = Globals.objINIFile.GetString("ARDOP Chat", "MyCallSign", "");
             Globals.strMyARQID = Globals.objINIFile.GetString("ARDOP Chat", "MyARQID", Globals.strMyCallsign);
             Globals.strCQText = Globals.objINIFile.GetString("ARDOP Chat", "CQ Text", "CQ ARQ");
-            blnSendCR = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "SendCR", "False"));
-            blnSendSpace = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "SendSpace", "False"));
-            blnSendWord = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "SendWord", "False"));
-            blnSendCtrlCr = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "SendCtrlCR", "False"));
-            blnEnableDebugLogs = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "EnableDebugLogs", "True"));
-            blnEnableAutoupdate = Convert.ToBoolean(objINIFile.GetString("ARDOP Chat", "EnableAutoUpdate", "True"));
-            blnAutoUpdateTest = Convert.ToBoolean(objINIFile.GetString("Main", "Test Autoupdate", "False"));
-            blnEnableBeacon = Convert.ToBoolean(objINIFile.GetString("Main", "Enable Beacon", "False"));
+            Globals.blnSendCR = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendCR", "False"));
+            Globals.blnSendSpace = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendSpace", "False"));
+            Globals.blnSendWord = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendWord", "False"));
+            Globals.blnSendCtrlCr = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "SendCtrlCR", "False"));
+            Globals.blnEnableDebugLogs = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "EnableDebugLogs", "True"));
+            Globals.blnEnableAutoupdate = Convert.ToBoolean(Globals.objINIFile.GetString("ARDOP Chat", "EnableAutoUpdate", "True"));
+            Globals.blnAutoUpdateTest = Convert.ToBoolean(Globals.objINIFile.GetString("Main", "Test Autoupdate", "False"));
+            Globals.blnEnableBeacon = Convert.ToBoolean(Globals.objINIFile.GetString("Main", "Enable Beacon", "False"));
             Globals.strFECBeaconText = Globals.objINIFile.GetString("Main", "FEC Beacon Text", "DE " + Globals.strMyCallsign);
             Globals.strARQBeaconText = Globals.objINIFile.GetString("Main", "ARQ Beacon Text", "H4 ARQ <" + Globals.strMyCallsign);
             Globals.intBeaconInterval = Globals.objINIFile.GetInteger("Main", "Beacon Interval", 20);
@@ -1676,8 +1677,8 @@ namespace ARES_Messenger
                     break;
             }
             this.rtbSend.Enabled = true;
-            intHorizSplitDst = objINIFile.GetInteger("ARDOP Chat", "Horiz Splitter", 200);
-            intVertSplitDst = objINIFile.GetInteger("ARDOP Chat", "Vert Splitter", 200);
+            intHorizSplitDst = Globals.objINIFile.GetInteger("ARDOP Chat", "Horiz Splitter", 200);
+            //intVertSplitDst = objINIFile.GetInteger("ARDOP Chat", "Vert Splitter", 200);
             // This insures window placement is on screen independent of .ini values
             System.Windows.Forms.Screen[] screen = System.Windows.Forms.Screen.AllScreens;
             bool blnLocOK = false;
@@ -1751,20 +1752,20 @@ namespace ARES_Messenger
 
             Globals.Log("BLANK");
             // Setup auto update use test mode if in Source code directory
-            objAutoupdate = new Autoupdate(blnAutoUpdateTest, (!blnEnableAutoupdate));
+            Globals.objAutoupdate = new Autoupdate(Globals.blnAutoUpdateTest, (!Globals.blnEnableAutoupdate));
             Application.DoEvents();
             Globals.Log("*** Startup of ARDOP Chat Ver " + Application.ProductVersion + " *** " + Constants.vbCrLf);
-            if ((objRadio == null))
+            if ((Globals.objRadio == null))
             {
-                objRadio = new Radio();
-                objRadio.SetFrequency(0);
+                Globals.objRadio = new Radio();
+                Globals.objRadio.SetFrequency(0);
                 // this initializes the radio control ports but will not actually set the freq to 0.
             }
             blnStartingARDOPTNC = true;
             StartARDOPWinTNC();
             if (blnTNCIsOpen)
             {
-                queSessionEvents.Enqueue("P  *** ARDOP Win TNC TCPIP OK on port " + intTCPIPPort.ToString + Constants.vbLf);
+                Globals.queSessionEvents.Enqueue("P  *** ARDOP Win TNC TCPIP OK on port " + Globals.intTCPIPPort.ToString() + Constants.vbLf);
             }
             blnStartingARDOPTNC = false;
 
@@ -1791,7 +1792,7 @@ namespace ARES_Messenger
 
         private void rtbSession_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (e.Button == Windows.Forms.MouseButtons.Right)
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 ContextMenurtbSession.Visible = true;
                 ContextMenurtbSession.Show(this.Left + this.Width - ContextMenurtbSession.Width, this.Top + 50);
@@ -1820,7 +1821,7 @@ namespace ARES_Messenger
 
         private void mnuUserFiles_Click(System.Object sender, System.EventArgs e)
         {
-            if (strMode == "ARQ" & !blnARQConnected)
+            if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
             {
                 mnuPasteAndSend.Enabled = false;
             }
@@ -1845,13 +1846,13 @@ namespace ARES_Messenger
                 OpenFileDialog dlgFile = new OpenFileDialog();
                 dlgFile.Multiselect = false;
                 dlgFile.Title = "Enter file to Edit ...";
-                dlgFile.InitialDirectory = strUserFilesDirectory;
+                dlgFile.InitialDirectory = Globals.strUserFilesDirectory;
                 dlgFile.Filter = "Text File(.txt)|*.txt";
                 dlgFile.CheckFileExists = false;
                 dlgFile.RestoreDirectory = true;
-                if (dlgFile.ShowDialog() == Windows.Forms.DialogResult.OK)
+                if (dlgFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    if (!IO.File.Exists(dlgFile.FileName))
+                    if (!File.Exists(dlgFile.FileName))
                     {
                         Interaction.MsgBox("File " + dlgFile.FileName + " does not exist!");
                         return;
@@ -1860,18 +1861,18 @@ namespace ARES_Messenger
                     {
                         Process.Start(dlgFile.FileName);
                     }
-                    strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
+                    Globals.strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
                 }
             }
             catch
             {
-                Exceptions("[Main.mnuUserFiles.Click] " + Err.Description);
+                //Globals.Exceptions("[Main.mnuUserFiles.Click] " + Err.Description);
             }
         }
 
         private void Main_ResizeEnd(object sender, System.EventArgs e)
         {
-            dttScrollLocked = Now.AddSeconds(-30);
+            dttScrollLocked = DateTime.Now.AddSeconds(-30);
         }
 
 
@@ -1892,23 +1893,23 @@ namespace ARES_Messenger
                 dlgFile.Multiselect = false;
                 dlgFile.CheckFileExists = true;
                 dlgFile.Title = "Select a File to Paste to Kbd Text ...";
-                dlgFile.InitialDirectory = strUserFilesDirectory;
+                dlgFile.InitialDirectory = Globals.strUserFilesDirectory;
                 dlgFile.Filter = "Text File(.txt)|*.txt";
                 dlgFile.RestoreDirectory = true;
-                if (dlgFile.ShowDialog() == Windows.Forms.DialogResult.OK)
+                if (dlgFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    string strFileData = My.Computer.FileSystem.ReadAllText(dlgFile.FileName);
-                    rtbSend.Text = rtbSend.Text + strFileData.Trim;
+                    string strFileData = File.ReadAllText(dlgFile.FileName);
+                    rtbSend.Text = rtbSend.Text + strFileData.Trim();
                     // This positions the cursor at the end of the added text from file.
                     rtbSend.AppendText(" ");
                     rtbSend.Undo();
-                    strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
+                    Globals.strUserFilesDirectory = dlgFile.FileName.Substring(0, 1 + dlgFile.FileName.LastIndexOf("\\"));
                 }
                 rtbSend.Focus();
             }
             catch (Exception ex)
             {
-                Exceptions("[Main.mnuPaste.Click] Err: " + Err.Number.ToString + " Exception: " + ex.ToString);
+                //Globals.Exceptions("[Main.mnuPaste.Click] Err: " + Err.Number.ToString + " Exception: " + ex.ToString);
             }
         }
 
@@ -1919,13 +1920,14 @@ namespace ARES_Messenger
             SendCommandToTNC("BUFFER 0");
             // clear the buffer
             SendCommandToTNC("ARQEND");
-            queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Disconnect request " + Constants.vbCrLf);
+            Globals.
+                queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Disconnect request " + Constants.vbCrLf);
 
         }
 
         private void btnQueueData_Click(System.Object sender, System.EventArgs e)
         {
-            if (strMode == "ARQ" & !blnARQConnected)
+            if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
             {
                 Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
                 return;
@@ -1937,7 +1939,7 @@ namespace ARES_Messenger
             if (strTextToSend.Length > 0)
             {
                 objTCPData.DataToSend = strTextToSend;
-                if (strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
                 {
                     LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
                     dttLastFECSend = System.DateTime.UtcNow;
@@ -2000,7 +2002,7 @@ namespace ARES_Messenger
 
         private void rtbSend_KeyPress1(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
-            strLastSendKey = e.KeyChar;
+            strLastSendKey = Convert.ToString(e.KeyChar);
             if (((strLastSendKey == Constants.vbLf) & blnCtrlKey & Globals.blnSendCtrlCr) | ((strLastSendKey == Constants.vbCr) & (Globals.blnSendCR | Globals.blnSendSpace)))
             {
                 if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
@@ -2047,9 +2049,9 @@ namespace ARES_Messenger
                 intRtbSendPtr = rtbSend.Text.Length;
                 RepaintRTBSend(ref intRtbSendPtr);
             }
-            else if ((strLastSendKey == " " | strLastSendKey == Constants.vbCr) & blnSendWord)
+            else if ((strLastSendKey == " " | strLastSendKey == Constants.vbCr) & Globals.blnSendWord)
             {
-                if (strMode == "ARQ" & !blnARQConnected)
+                if (Globals.strMode == "ARQ" & !Globals.blnARQConnected)
                 {
                     Interaction.MsgBox("Text may not be sent in ARQ mode until CONNECTED!", MsgBoxStyle.Information, "No ARQ Connection");
                     return;
@@ -2059,7 +2061,7 @@ namespace ARES_Messenger
                 if (strTextToSend.Length > 0)
                 {
                     objTCPData.DataToSend = strTextToSend;
-                    if (strMode.IndexOf("FEC") != -1 & Now.Subtract(dttLastFECSend).TotalSeconds > 120)
+                    if (Globals.strMode.IndexOf("FEC") != -1 & DateTime.Now.Subtract(dttLastFECSend).TotalSeconds > 120)
                     {
                         LogADIFQSO("", System.DateTime.UtcNow, System.DateTime.UtcNow.AddHours(-1), "", "", "H4", intFrequency, "", strRemoteGS, "Transmit H4 FEC");
                         dttLastFECSend = System.DateTime.UtcNow;
@@ -2076,7 +2078,7 @@ namespace ARES_Messenger
 
         private void rtbSend_KeyUp1(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if (e.KeyCode == 17)
+            if (e.KeyCode == Keys.ControlKey)
             {
                 blnCtrlKey = false;
             }
@@ -2090,7 +2092,7 @@ namespace ARES_Messenger
 
         private void rtbSend_MouseDown1(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (e.Button == Windows.Forms.MouseButtons.Right)
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 ContextMenurtbSend.Visible = true;
                 ContextMenurtbSend.Show(this.Left + this.Width - ContextMenurtbSend.Width, this.Top + this.Height - ContextMenurtbSend.Height);
@@ -2168,10 +2170,10 @@ namespace ARES_Messenger
                 {
                     mnuMode.Text = "Mode: FEC";
                 }
-                grdContacts.Font = new System.Drawing.Font("Microsoft Sans Serif", intFontSize, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
-                rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", intFontSize, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+                //grdContacts.Font = new System.Drawing.Font("Microsoft Sans Serif", intFontSize, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
+                rtbSend.Font = new System.Drawing.Font("Microsoft Sans Serif", Globals.intFontSize, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
             }
-            if (blnAutoID)
+            if (Globals.blnAutoID)
             {
                 mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
             }
@@ -2185,11 +2187,11 @@ namespace ARES_Messenger
         {
             try
             {
-                Help.ShowHelp(this, strExecutionDirectory + "Chat Help.chm", HelpNavigator.TableOfContents);
+                Help.ShowHelp(this, Globals.strExecutionDirectory + "Chat Help.chm", HelpNavigator.TableOfContents);
             }
             catch
             {
-                Exception("[Chat Main mnuHelp_Click] " + Err.Description);
+                //Globals.Exception("[Chat Main mnuHelp_Click] " + Err.Description);
             }
         }
 
@@ -2197,31 +2199,31 @@ namespace ARES_Messenger
         {
             try
             {
-                Help.ShowHelp(this, strExecutionDirectory + "Chat Help.chm", HelpNavigator.Index);
+                Help.ShowHelp(this, Globals.strExecutionDirectory + "Chat Help.chm", HelpNavigator.Index);
             }
             catch
             {
-                Exception("[Chat Main mnuHelp_Click] " + Err.Description);
+                //Globals.Exception("[Chat Main mnuHelp_Click] " + Err.Description);
             }
         }
 
         private void ToolStripMenuItem2_Click(System.Object sender, System.EventArgs e)
         {
-            if (blnAutoID)
+            if (Globals.blnAutoID)
             {
-                blnAutoID = false;
+                Globals.blnAutoID = false;
                 mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
                 mnuItemAutoID.Text = "Auto ID is Off";
-                queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Auto ID is OFF" + Constants.vbCrLf);
+                Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Auto ID is OFF" + Constants.vbCrLf);
             }
             else
             {
-                blnAutoID = true;
+                Globals.blnAutoID = true;
                 mnuItemAutoID.Font = new System.Drawing.Font("Microsoft Sans Serif", 11, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
                 mnuItemAutoID.Text = "Auto ID is On";
-                queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Auto ID is ON" + Constants.vbCrLf);
+                Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Auto ID is ON" + Constants.vbCrLf);
             }
-            SendCommandToTNC("AUTOID " + blnAutoID.ToString);
+            SendCommandToTNC("AUTOID " + Globals.blnAutoID.ToString());
 
         }
 
@@ -2229,11 +2231,11 @@ namespace ARES_Messenger
         private void UpdateInboundThroughput(int intCharCnt)
         {
             ThroughputData objInbound = default(ThroughputData);
-            objInbound.Arrival = Now;
+            objInbound.Arrival = DateTime.Now;
             objInbound.CharCnt = intCharCnt;
             cllInbound.Add(objInbound);
             int intTotal1MinCharacters = 0;
-            System.DateTime dttOldest = Now;
+            System.DateTime dttOldest = DateTime.Now;
             int intCntAtOldest = 0;
             int int1MinInboundChar = 0;
             int intCllPtr = 1;
@@ -2247,7 +2249,7 @@ namespace ARES_Messenger
             for (int i = 1; i <= cllInbound.Count; i++)
             {
                 objInbound = (ThroughputData)cllInbound.Item(intCllPtr);
-                if (Now.Subtract(objInbound.Arrival).TotalSeconds > 30)
+                if (DateTime.Now.Subtract(objInbound.Arrival).TotalSeconds > 30)
                 {
                     // Purge this old data from the collection
                     cllInbound.Remove(intCllPtr);
@@ -2275,24 +2277,24 @@ namespace ARES_Messenger
             }
             else
             {
-                if (Now.Subtract(dttOldest).TotalSeconds < 0.5)
+                if (DateTime.Now.Subtract(dttOldest).TotalSeconds < 0.5)
                     return;
                 // require a minimum of .5 sec data to compute throughput
-                intThroughput = Convert.ToInt32((intTotal1MinCharacters - intCntAtOldest) * 60 / (Now.Subtract(dttOldest).TotalSeconds));
+                intThroughput = Convert.ToInt32((intTotal1MinCharacters - intCntAtOldest) * 60 / (DateTime.Now.Subtract(dttOldest).TotalSeconds));
             }
             strThruPutDirection = "Rx: ";
-            dttLastRxSpeedUpdate = Now;
+            dttLastRxSpeedUpdate = DateTime.Now;
         }
 
         // This calculates the 1 minute rolling throughput of transmitted data in characters/minute
         private void UpdateOutboundThroughputARQ(int intCharCnt)
         {
             ThroughputData objOutbound = default(ThroughputData);
-            objOutbound.Arrival = Now;
+            objOutbound.Arrival = DateTime.Now;
             objOutbound.CharCnt = intCharCnt;
             cllOutbound.Add(objOutbound);
             int intTotal1MinCharacters = 0;
-            System.DateTime dttOldest = Now;
+            System.DateTime dttOldest = DateTime.Now;
             int intCntAtOldest = 0;
             int int1MinInboundChar = 0;
             int intCllPtr = 1;
@@ -2300,7 +2302,7 @@ namespace ARES_Messenger
             for (int i = 1; i <= cllOutbound.Count; i++)
             {
                 objOutbound = (ThroughputData)cllOutbound.Item(intCllPtr);
-                if (Now.Subtract(objOutbound.Arrival).TotalSeconds > 60)
+                if (DateTime.Now.Subtract(objOutbound.Arrival).TotalSeconds > 60)
                 {
                     // Purge this old data from the collection
                     cllOutbound.Remove(intCllPtr);
@@ -2329,7 +2331,7 @@ namespace ARES_Messenger
             }
             else
             {
-                if (Now.Subtract(dttOldest).TotalSeconds < 2)
+                if (DateTime.Now.Subtract(dttOldest).TotalSeconds < 2)
                     return;
                 intThroughput = Convert.ToInt32((intTotal1MinCharacters - intCntAtOldest) * 60 / (Now.Subtract(dttOldest).TotalSeconds));
             }
@@ -2378,7 +2380,7 @@ namespace ARES_Messenger
 
         private void mnuRtbSendPaste_Click(object sender, System.EventArgs e)
         {
-            if (Clipboard.ContainsText)
+            if (Clipboard.ContainsText())
                 rtbSend.Paste();
         }
 
@@ -2398,7 +2400,7 @@ namespace ARES_Messenger
         }
 
 
-        private void grdContacts_CellContentClick(System.Object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
+        /*private void grdContacts_CellContentClick(System.Object sender, System.Windows.Forms.DataGridViewCellEventArgs e)
         {
             if (blnInitializingGrid)
                 return;
@@ -2434,14 +2436,14 @@ namespace ARES_Messenger
             {
                 Exceptions("grdContacts_CellContentClick] Err: " + ex.ToString);
             }
-        }
+        }*/
 
         public void LogADIFQSO(string strCall, System.DateTime dttStartUTCDate, System.DateTime dttEndUTCDate, string strName, string strQTH, string strMode, int intFreqHz, string strAVGSN, string strRemoteGS, string strComment = "")
         {
-            string strLine = "<station_callsign:" + strMyCallsign.Length.ToString + ">" + strMyCallsign;
+            string strLine = "<station_callsign:" + Globals.strMyCallsign.Length.ToString() + ">" + Globals.strMyCallsign;
             if (!string.IsNullOrEmpty(strCall))
             {
-                strLine += "<call:" + strCall.Length.ToString + ">" + strCall.ToUpper;
+                strLine += "<call:" + strCall.Length.ToString() + ">" + strCall.ToUpper();
             }
             strLine += "<qso_date:8>" + Strings.Format(dttStartUTCDate, "yyyyMMdd");
             strLine += "<time_on:6>" + Strings.Format(dttStartUTCDate, "HHmmss");
@@ -2457,7 +2459,7 @@ namespace ARES_Messenger
             {
                 strLine += "<qth:" + strQTH.Length + ">" + strQTH;
             }
-            strLine += "<mode:" + strMode.Length.ToString + ">" + strMode;
+            strLine += "<mode:" + strMode.Length.ToString() + ">" + strMode;
             if (intFreqHz >= 1800000 & intFreqHz <= 2000000)
             {
                 strLine += "<band:4>160M";
@@ -2544,12 +2546,12 @@ namespace ARES_Messenger
             }
             catch (Exception ex)
             {
-                Exceptions("[Main.LogADIFQSO]  Err :" + Err.Number.ToString + "  Exception: " + ex.ToString);
+                //Globals.Exceptions("[Main.LogADIFQSO]  Err :" + Err.Number.ToString + "  Exception: " + ex.ToString);
             }
 
         }
 
-        private void GetQSONameQTHFromMiniLog(ref string strName, ref string strQTH, string strCallSign)
+        /*private void GetQSONameQTHFromMiniLog(ref string strName, ref string strQTH, string strCallSign)
         {
             DataGridViewRow objRow = new DataGridViewRow();
             int intRows = grdContacts.RowCount;
@@ -2569,7 +2571,7 @@ namespace ARES_Messenger
             }
             strName = "";
             strQTH = "";
-        }
+        }*/
 
         private void ToolStripMenuItem2_Click_1(System.Object sender, System.EventArgs e)
         {
@@ -2585,24 +2587,24 @@ namespace ARES_Messenger
         private void ARQCQToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
         {
             ARQCall frmCall = new ARQCall();
-            blnARQCalling = false;
+            Globals.blnARQCalling = false;
             frmCall.ShowDialog();
-            if (blnARQCalling & blnBusy)
+            if (Globals.blnARQCalling & Globals.blnBusy)
             {
                 if (Interaction.MsgBox("The channel appears busy!  Continue with call?", MsgBoxStyle.YesNo, "Channel Busy") == MsgBoxResult.No)
                 {
-                    blnARQCalling = false;
+                    Globals.blnARQCalling = false;
                     return;
                 }
             }
-            if (blnARQCalling)
+            if (Globals.blnARQCalling)
             {
-                if (SendCommandToTNC("ARQCONNECT " + strTargetARQCallsign))
+                if (SendCommandToTNC("ARQCONNECT " + Globals.strTargetARQCallsign))
                 {
-                    strQSOCallSign = strTargetARQCallsign;
+                    strQSOCallSign = Globals.strTargetARQCallsign;
                     strADIFComment = "H4 ARQ Call";
                     dttQSOStart = System.DateTime.UtcNow;
-                    queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Calling " + strTargetARQCallsign + " de " + strMyCallsign + " @ " + TimestampEx() + Constants.vbCrLf);
+                    Globals.queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Calling " + Globals.strTargetARQCallsign + " de " + Globals.strMyCallsign + " @ " + Globals.TimestampEx() + Constants.vbCrLf);
                 }
             }
         }
@@ -2610,35 +2612,35 @@ namespace ARES_Messenger
         private void ARQCallToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
         {
             ARQCall frmCall = new ARQCall();
-            blnARQCalling = false;
+            Globals.blnARQCalling = false;
             frmCall.ShowDialog();
-            if (blnARQCalling & blnBusy)
+            if (Globals.blnARQCalling & Globals.blnBusy)
             {
                 if (Interaction.MsgBox("The channel appears busy!  Continue with call?", MsgBoxStyle.YesNo, "Channel Busy") == MsgBoxResult.No)
                 {
-                    blnARQCalling = false;
-                    blnARQCQ = false;
+                    Globals.blnARQCalling = false;
+                    Globals.blnARQCQ = false;
                     return;
                 }
             }
-            if (blnARQCalling)
+            if (Globals.blnARQCalling)
             {
-                if (SendCommandToTNC("ARQCALL " + strTargetARQCallsign + " " + intCallRepeats.ToString))
+                if (SendCommandToTNC("ARQCALL " + Globals.strTargetARQCallsign + " " + Globals.intCallRepeats.ToString()))
                 {
-                    strQSOCallSign = strTargetARQCallsign;
+                    strQSOCallSign = Globals.strTargetARQCallsign;
                     strADIFComment = "H4 ARQ Call";
                     dttQSOStart = System.DateTime.UtcNow;
-                    queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Calling " + strTargetARQCallsign + "<" + strMyCallsign + " @ " + TimestampEx() + Constants.vbCrLf);
+                    Globals.queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Calling " + Globals.strTargetARQCallsign + "<" + Globals.strMyCallsign + " @ " + Globals.TimestampEx() + Constants.vbCrLf);
                 }
             }
-            else if (blnARQCQ)
+            else if (Globals.blnARQCQ)
             {
-                if (SendCommandToTNC("ARQCQ " + strCQText + "< " + intCallRepeats.ToString))
+                if (SendCommandToTNC("ARQCQ " + Globals.strCQText + "< " + Globals.intCallRepeats.ToString()))
                 {
-                    strQSOCallSign = strTargetARQCallsign;
+                    strQSOCallSign = Globals.strTargetARQCallsign;
                     strADIFComment = "H4 ARQ Call";
                     dttQSOStart = System.DateTime.UtcNow;
-                    queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Calling " + strCQText + "<" + strMyCallsign + " @ " + TimestampEx() + Constants.vbCrLf);
+                    Globals.queSessionEvents.Enqueue("P " + Constants.vbCrLf + "*** Calling " + Globals.strCQText + "<" + Globals.strMyCallsign + " @ " + Globals.TimestampEx() + Constants.vbCrLf);
                 }
             }
         }
@@ -2649,8 +2651,8 @@ namespace ARES_Messenger
                 return;
             SendCommandToTNC("MODE FEC FD");
             mnuMode.Text = "Mode: FEC FD";
-            strMode = "FEC FD";
-            queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: FEC FD" + Constants.vbCrLf);
+            Globals.strMode = "FEC FD";
+            Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: FEC FD" + Constants.vbCrLf);
             mnuCall.Enabled = false;
             this.rtbSend.Enabled = true;
             mnuPasteAndSend.Enabled = true;
@@ -2659,7 +2661,7 @@ namespace ARES_Messenger
 
         private void ARQIDToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
         {
-            SendCommandToTNC("ARQID " + strMyARQID);
+            SendCommandToTNC("ARQID " + Globals.strMyARQID);
         }
 
 
@@ -2671,7 +2673,7 @@ namespace ARES_Messenger
         {
             if (mnuAnswerCQ.Text.IndexOf("<") != -1)
             {
-                strTargetARQCallsign = mnuAnswerCQ.Text.Substring(1 + mnuAnswerCQ.Text.IndexOf("<")).Trim.ToUpper;
+                Globals.strTargetARQCallsign = mnuAnswerCQ.Text.Substring(1 + mnuAnswerCQ.Text.IndexOf("<")).Trim().ToUpper();
                 blnAnsweringCQ = true;
                 mnuAnswerCQ.Enabled = false;
             }
@@ -2681,8 +2683,8 @@ namespace ARES_Messenger
         {
             SendCommandToTNC("MODE FEC RBST");
             mnuMode.Text = "Mode: FEC RBST";
-            strMode = "FEC RBST";
-            queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: FEC RBST" + Constants.vbCrLf);
+            Globals.strMode = "FEC RBST";
+            Globals.queSessionEvents.Enqueue("P  " + Constants.vbCrLf + "*** Mode: FEC RBST" + Constants.vbCrLf);
             mnuCall.Enabled = false;
             this.rtbSend.Enabled = true;
             mnuPasteAndSend.Enabled = true;

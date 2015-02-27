@@ -92,11 +92,11 @@
       <DependentUpon>ARQCall.cs</DependentUpon>
     </Compile>
     <Compile Include="Autoupdate.cs" />
-    <Compile Include="Beacon.cs">
+    <Compile Include="BeaconSetup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Beacon.Designer.cs">
-      <DependentUpon>Beacon.cs</DependentUpon>
+    <Compile Include="BeaconSetup.Designer.cs">
+      <DependentUpon>BeaconSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="ChatSetupForm.cs">
       <SubType>Form</SubType>

@@ -96,9 +96,9 @@ namespace ARES_Messenger
             public int CharCnt;
         }
 
-        private Collection cllInbound = new Collection();
+        private IList<int> cllInbound = new List<int>();
 
-        private Collection cllOutbound = new Collection();
+        private IList<int> cllOutbound = new List<int>();
 
         // object to buffer Session rtb inputs
         SessionUpdates objSessionUpdate;
@@ -339,7 +339,7 @@ namespace ARES_Messenger
                         //rtbSession.SelectedText = Chr(0) ' This replaces the Appended LF with a null essentially deleting it
                         rtbSession.SelectionStart = rtbSession.Text.Length - 2;
                         rtbSession.SelectionLength = 2;
-                        rtbSession.SelectedText = Strings.Chr(0) + Strings.Chr(0);
+                        rtbSession.SelectedText = Convert.ToChar(0).ToString() + Strings.Chr(0);
                         static_UpdateSessionDisplay_blnLFAppended = false;
                     }
                     foreach (SessionUpdates Update in cllPendingUpdates)
@@ -978,7 +978,7 @@ namespace ARES_Messenger
             return false;
         }
 
-        private void AppendDataToBuffer(ref byte[] bytNewData, ref byte[] bytBuffer)
+        private void AppendDataToBuffer(byte[] bytNewData, ref byte[] bytBuffer)
         {
             if (bytNewData.Length == 0)
                 return;
@@ -1122,7 +1122,7 @@ namespace ARES_Messenger
             }
 
             //Logs.WriteDebug("[Main.objTCPIP.OnDataIn] TCPIP OnDataIn from host: " & e.Text)
-            AppendDataToBuffer(ref e.TextB, ref bytTNCIBData_CmdBuffer);
+            AppendDataToBuffer(e.TextB, ref bytTNCIBData_CmdBuffer);
         SearchForStart:
 
             // look for start of Command ("C:")  or Data (D:") and establish start pointer (Capital C or D indicates from Host)
@@ -1256,6 +1256,7 @@ namespace ARES_Messenger
             {
                 Globals.queSessionEvents.Enqueue("P  *** TNC " + strCMD + Constants.vbLf);
             }
+            return true;
         }
         private void ARQToolStripMenuItem_Click(System.Object sender, System.EventArgs e)
         {
@@ -2333,7 +2334,7 @@ namespace ARES_Messenger
             {
                 if (DateTime.Now.Subtract(dttOldest).TotalSeconds < 2)
                     return;
-                intThroughput = Convert.ToInt32((intTotal1MinCharacters - intCntAtOldest) * 60 / (Now.Subtract(dttOldest).TotalSeconds));
+                intThroughput = Convert.ToInt32((intTotal1MinCharacters - intCntAtOldest) * 60 / (DateTime.Now.Subtract(dttOldest).TotalSeconds));
             }
             strThruPutDirection = "Tx: ";
         }

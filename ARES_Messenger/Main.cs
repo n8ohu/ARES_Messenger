@@ -96,9 +96,9 @@ namespace ARES_Messenger
             public int CharCnt;
         }
 
-        private IList<int> cllInbound = new List<int>();
+        private Collection cllInbound = new Collection();
 
-        private IList<int> cllOutbound = new List<int>();
+        private Collection cllOutbound = new Collection();
 
         // object to buffer Session rtb inputs
         SessionUpdates objSessionUpdate;
@@ -534,6 +534,7 @@ namespace ARES_Messenger
 
         private void Main_Load(object sender, System.EventArgs e)
         {
+            tmrStartup = new System.Windows.Forms.Timer();
             Globals.strExecutionDirectory = Application.StartupPath + "\\";
             Globals.strLogsDirectory = Globals.strExecutionDirectory + "Logs\\";
             if (!Directory.Exists(Globals.strLogsDirectory))
@@ -2249,7 +2250,7 @@ namespace ARES_Messenger
             }
             for (int i = 1; i <= cllInbound.Count; i++)
             {
-                objInbound = (ThroughputData)cllInbound.Item(intCllPtr);
+                objInbound = (ThroughputData)cllInbound[intCllPtr];
                 if (DateTime.Now.Subtract(objInbound.Arrival).TotalSeconds > 30)
                 {
                     // Purge this old data from the collection
@@ -2272,7 +2273,7 @@ namespace ARES_Messenger
             if (cllInbound.Count == 1)
             {
                 // Estimate the average of 4 seconds/frame
-                objInbound = (ThroughputData)cllInbound.Item(1);
+                objInbound = (ThroughputData)cllInbound[1];
                 //intThroughput = 15 * objInbound.CharCnt
                 intThroughput = 0;
             }
@@ -2302,7 +2303,7 @@ namespace ARES_Messenger
 
             for (int i = 1; i <= cllOutbound.Count; i++)
             {
-                objOutbound = (ThroughputData)cllOutbound.Item(intCllPtr);
+                objOutbound = (ThroughputData)cllOutbound[intCllPtr];
                 if (DateTime.Now.Subtract(objOutbound.Arrival).TotalSeconds > 60)
                 {
                     // Purge this old data from the collection
@@ -2327,7 +2328,7 @@ namespace ARES_Messenger
             if (cllOutbound.Count == 1)
             {
                 // Estimate the average of 4 seconds/frame
-                objOutbound = (ThroughputData)cllOutbound.Item(1);
+                objOutbound = (ThroughputData)cllOutbound[1];
                 intThroughput = 15 * objOutbound.CharCnt;
             }
             else
